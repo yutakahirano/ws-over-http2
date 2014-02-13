@@ -302,7 +302,7 @@
           <t>
             To <spanx style="emph">Close the WebSocket Connection</spanx>, an endpoint closes the underlying HTTP/2.0 stream.
             If the stream is already closed, the endpoint MUST do nothing.
-            Otherwise, the endpoint MUST send a RST_STREAM frame with an appropriate error code.
+            Otherwise, the endpoint MUST send an RST_STREAM frame with an appropriate error code.
           </t>
         </section>
         <section title="Start the WebSocket Closing Handshake" anchor="start_closing">
