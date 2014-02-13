@@ -8,7 +8,7 @@ Expires: August 17, 2014
 
 
                         WebSocket over HTTP/2.0
-               draft-hirano-httpbis-websocket-over-http2
+              draft-hirano-httpbis-websocket-over-http2-00
 
 Abstract
 

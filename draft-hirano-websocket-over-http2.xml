@@ -5,7 +5,7 @@
 <?rfc toc="yes" ?>
 <rfc
    category="std"
-   docName="draft-hirano-httpbis-websocket-over-http2"
+   docName="draft-hirano-httpbis-websocket-over-http2-00"
    ipr="trust200902">
   <front>
     <title>WebSocket over HTTP/2.0</title>
