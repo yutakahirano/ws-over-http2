@@ -254,13 +254,13 @@
           Several representations are proposed.
           In each representation, an endpoint MUST set END_STREAM flag at the last HTTP/2.0 frame it sends on the WebSocket connection.
         </t>
-        <section title="Tunnering RFC6455 framing (Plan D)">
+        <section title="Tunneling RFC6455 framing (Plan D)">
           <t>
             The WebSocket frame byte representation is embedded in payload in HTTP/2.0 DATA frame.
             DATA frames can be re-framed, i.e. One WebSocket frame can be split over multiple DATA frames and one DATA frames can contain multiple WebSocket frames.
           </t>
         </section>
-        <section title="Tunnering RFC6455 framing with END_SEGMENT mark (Plan A)">
+        <section title="Tunneling RFC6455 framing with END_SEGMENT mark (Plan A)">
           <t>
             This plan is almost same as Plan D, but it uses END_SEGMENT flag in a DATA frame to make intermediaries enable to flush data appropriately without understanding the embedded WebSocket framing.
           </t>
