@@ -26,7 +26,7 @@
         The WebSocket protocol enables two-way communication between a client running untrusted code in a controlled environment to a remote host that has opted-in to communications from that code.
         Since it requires one TCP connection for every WebSocket connection, having multiple WebSocket connections between the same client and the same server is inefficient.
         On the other hand, HTTP/2.0 specifies a fast, secure, multiplexed framing protocol.
-        This document provides bi-directional multiplexed communication on the top of HTTP/2.0.
+        This document provides bi-directional multiplexed communication by layering WebSocket on top of HTTP/2.0.
       </t>
 
       <t>
@@ -48,7 +48,7 @@
           Definitions in <xref target="RFC6455"/> not overridden by this document such as Error Handling or Extensions are still valid.
         </t>
         <t>
-          <xref target="protocol_negotiation"/> describes how to choose the protocol between the native WebSocket and WebSocket over HTTP/2.0.
+          <xref target="protocol_negotiation"/> describes how to choose the protocol to use between the native WebSocket and WebSocket over HTTP/2.0 for each server.
           Each of <xref target="opening_handshake"/>, <xref target="framing"/> and <xref target="closing_connection"/> overrides definitions and rules in its counterpart in <xref target="RFC6455"/>.
         </t>
       </section>
