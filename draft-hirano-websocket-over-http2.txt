@@ -19,7 +19,8 @@ Abstract
    multiple WebSocket connections between the same client and the same
    server is inefficient.  On the other hand, HTTP/2.0 specifies a fast,
    secure, multiplexed framing protocol.  This document provides bi-
-   directional multiplexed communication on the top of HTTP/2.0.
+   directional multiplexed communication by layering WebSocket on top of
+   HTTP/2.0.
 
    Please send feedback to the httpbis@ietf.org mailing list.
 
@@ -48,7 +49,6 @@ Copyright Notice
    This document is subject to BCP 78 and the IETF Trust's Legal
    Provisions Relating to IETF Documents
    (http://trustee.ietf.org/license-info) in effect on the date of
-   publication of this document.  Please review these documents
 
 
 
@@ -57,6 +57,7 @@ Hirano                   Expires August 17, 2014                [Page 1]
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
+   publication of this document.  Please review these documents
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
@@ -70,15 +71,15 @@ Table of Contents
      1.1.  Document Organization  . . . . . . . . . . . . . . . . . .  3
    2.  Conformance Requirements and Terminology . . . . . . . . . . .  4
    3.  Cross Protocol Negotiation . . . . . . . . . . . . . . . . . .  5
-     3.1.  Supporting scheme negotiation using SETTINGS frame . . . .  6
+     3.1.  Supported scheme negotiation using SETTINGS frame  . . . .  6
    4.  Opening Handshake  . . . . . . . . . . . . . . . . . . . . . .  8
      4.1.  Handshake Request  . . . . . . . . . . . . . . . . . . . .  8
      4.2.  Handshake Response . . . . . . . . . . . . . . . . . . . .  8
    5.  Data Framing . . . . . . . . . . . . . . . . . . . . . . . . . 10
      5.1.  Overview . . . . . . . . . . . . . . . . . . . . . . . . . 10
      5.2.  Frame representation . . . . . . . . . . . . . . . . . . . 10
-       5.2.1.  Tunnering RFC6455 framing (Plan D) . . . . . . . . . . 10
-       5.2.2.  Tunnering RFC6455 framing with END_SEGMENT mark
+       5.2.1.  Tunneling RFC6455 framing (Plan D) . . . . . . . . . . 10
+       5.2.2.  Tunneling RFC6455 framing with END_SEGMENT mark
                (Plan A) . . . . . . . . . . . . . . . . . . . . . . . 10
        5.2.3.  HEADERS + DATAs (Plan C) . . . . . . . . . . . . . . . 10
      5.3.  Masking  . . . . . . . . . . . . . . . . . . . . . . . . . 11
@@ -107,7 +108,6 @@ Table of Contents
 
 
 
-
 Hirano                   Expires August 17, 2014                [Page 2]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
@@ -125,10 +125,10 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    defined in [RFC6455].  Definitions in [RFC6455] not overridden by
    this document such as Error Handling or Extensions are still valid.
 
-   Section 3 describes how to choose the protocol between the native
-   WebSocket and WebSocket over HTTP/2.0.  Each of Section 4, Section 5
-   and Section 6 overrides definitions and rules in its counterpart in
-   [RFC6455].
+   Section 3 describes how to choose the protocol to use between the
+   native WebSocket and WebSocket over HTTP/2.0 for each server.  Each
+   of Section 4, Section 5 and Section 6 overrides definitions and rules
+   in its counterpart in [RFC6455].
 
 
 
@@ -232,7 +232,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
    1.  If the client has an HTTP/2.0 session established by previous
        requests and it knows that the session supports WebSocket over
-       HTTP/2.0 by the SETTINGS_SUPPORTING_SCHEMES notification, the
+       HTTP/2.0 by the SETTINGS_SUPPORTED_SCHEMES notification, the
        client SHOULD create a new HTTP/2.0 stream in the existing
        HTTP/2.0 session and start the opening handshake on it with an
        appropriate scheme.  Both of WebSocket (ws) and secure WebSocket
@@ -307,20 +307,20 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
        layers like the JavaScript event queue.  Then, the client SHOULD
        reconnect to the advertised server via HTTP/2.0.
 
-3.1.  Supporting scheme negotiation using SETTINGS frame
+3.1.  Supported scheme negotiation using SETTINGS frame
 
    _THIS SECTION SHOULD BE INTRODUCED IN THE HTTP/2.0 SPEC_.
 
-   By default, a client can send HEADERS frames on schemes advertised by
-   the selected ALPN protocol.  A server SHOULD send a SETTINGS frame as
-   soon as possible whether it supports other schemes or not.  Here is a
-   proposed ID and value which should be defined in the HTTP/2.0
+   By default, a client can send HEADERS frames with schemes advertised
+   by the selected ALPN protocol.  A server SHOULD send a SETTINGS frame
+   as soon as possible whether it supports other schemes or not.  Here
+   is a proposed ID and value which should be defined in the HTTP/2.0
    specification.  If the server received a HEADERS with an unsupported
    scheme, the server MUST reset the stream.
 
-   9 - SETTINGS_SUPPORTING_SCHEMES allows the sender to inform the
-   remote endpoint the supporting protocol schemes.  The corresponding
-   value must be a 32-bit value, and which contains flags as follows:
+   9 - SETTINGS_SUPPORTED_SCHEMES allows the sender to inform the remote
+   endpoint the supported protocol schemes.  The corresponding value
+   must be a 32-bit value, and which contains flags as follows:
 
       bit 0: http
 
@@ -416,8 +416,8 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
       specification.  (See [RFC6455])
 
       ":version": the WebSocket protocol version of this request.  (MUST
-      be "WebSocket/8", "WebSocket/13", or so.  The number MUST be
-      matched with the Sec-WebSocket-Version header.  See [RFC6455])
+      be "WebSocket/13" or so.  The number MUST be matched with the Sec-
+      WebSocket-Version header.  See [RFC6455])
 
       ":scheme": the scheme portion of the URI.  (MUST be "ws" or "wss".
       See also /secure/ flag in [RFC6455])
@@ -468,11 +468,11 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
    Also, other HTTP compatible header name/value pairs MAY be present.
    All header names MUST be lowercase.  The successful server response
-   MUST have ":status" containing "101".  If the handshake fails, the
-   client MUST send an HTTP/2.0 DATA frame with empty data field to
-   avoid abnormal HTTP/2.0 session termination.  The HTTP/2.0 DATA frame
-   MUST set the END_STREAM to indicate the client intends to send no
-   further data on this stream.
+   MUST have ":status" containing "101".
+
+
+
+
 
 
 
@@ -527,14 +527,14 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    endpoint MUST set END_STREAM flag at the last HTTP/2.0 frame it sends
    on the WebSocket connection.
 
-5.2.1.  Tunnering RFC6455 framing (Plan D)
+5.2.1.  Tunneling RFC6455 framing (Plan D)
 
    The WebSocket frame byte representation is embedded in payload in
    HTTP/2.0 DATA frame.  DATA frames can be re-framed, i.e.  One
    WebSocket frame can be split over multiple DATA frames and one DATA
    frames can contain multiple WebSocket frames.
 
-5.2.2.  Tunnering RFC6455 framing with END_SEGMENT mark (Plan A)
+5.2.2.  Tunneling RFC6455 framing with END_SEGMENT mark (Plan A)
 
    This plan is almost same as Plan D, but it uses END_SEGMENT flag in a
    DATA frame to make intermediaries enable to flush data appropriately

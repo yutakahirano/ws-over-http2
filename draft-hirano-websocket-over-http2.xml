@@ -226,9 +226,6 @@
           </list>
           Also, other HTTP compatible header name/value pairs MAY be present.
           All header names MUST be lowercase. The successful server response MUST have “:status” containing “101”.
-
-          If the handshake fails, the client MUST send an HTTP/2.0 DATA frame with empty data field to avoid abnormal HTTP/2.0 session termination.
-          The HTTP/2.0 DATA frame MUST set the END_STREAM to indicate the client intends to send no further data on this stream.
         </t>
       </section>
     </section>
