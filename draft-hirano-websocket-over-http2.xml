@@ -150,7 +150,7 @@
           <spanx style="emph">THIS SECTION SHOULD BE INTRODUCED IN THE HTTP/2.0 SPEC</spanx>.
         </t>
         <t>
-          By default, a client can send HEADERS frames on schemes advertised by the selected ALPN protocol.
+          By default, a client can send HEADERS frames with schemes advertised by the selected ALPN protocol.
           A server SHOULD send a SETTINGS frame as soon as possible whether it supports other schemes or not.
           Here is a proposed ID and value which should be defined in the HTTP/2.0 specification.
           If the server received a HEADERS with an unsupported scheme, the server MUST reset the stream.
