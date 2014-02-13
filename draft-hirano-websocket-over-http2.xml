@@ -44,7 +44,7 @@
       <section title="Document Organization">
         <t>
           WebSocket over HTTP/2.0 is a protocol that layers the WebSocket protocol over HTTP/2.0 framing rather than TCP connection.
-          This document introduces some abstractions and overrides some definitions defined in <xref target="RFC6455"/>.
+          This document introduces some abstractions and overrides some definitions in <xref target="RFC6455"/>.
           Definitions in <xref target="RFC6455"/> not overridden by this document such as Error Handling or Extensions are still valid.
         </t>
         <t>
@@ -329,7 +329,7 @@
     </section>
     <section title="Closing the Connection" anchor="closing_connection">
       <t>
-        Some definitions defined in <xref target="RFC6455"/> are overridden in this section.
+        Some definitions in <xref target="RFC6455"/> are overridden in this section.
       </t>
       <section title='Definitions'>
 

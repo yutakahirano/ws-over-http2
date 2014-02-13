@@ -122,8 +122,8 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    WebSocket over HTTP/2.0 is a protocol that layers the WebSocket
    protocol over HTTP/2.0 framing rather than TCP connection.  This
    document introduces some abstractions and overrides some definitions
-   defined in [RFC6455].  Definitions in [RFC6455] not overridden by
-   this document such as Error Handling or Extensions are still valid.
+   in [RFC6455].  Definitions in [RFC6455] not overridden by this
+   document such as Error Handling or Extensions are still valid.
 
    Section 3 describes how to choose the protocol to use between the
    native WebSocket and WebSocket over HTTP/2.0 for each server.  Each
@@ -619,7 +619,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 6.  Closing the Connection
 
-   Some definitions defined in [RFC6455] are overridden in this section.
+   Some definitions in [RFC6455] are overridden in this section.
 
 6.1.  Definitions
 
