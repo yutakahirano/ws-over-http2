@@ -43,7 +43,7 @@
 
       <section title="Document Organization">
         <t>
-          WebSocket over HTTP/2.0 is a protocol that layers the WebSocket protocol over HTTP/2.0 framing rather than TCP connection.
+          WebSocket over HTTP/2.0 is a protocol that layers the WebSocket protocol over HTTP/2.0 stream rather than TCP connection.
           This document introduces some abstractions and overrides some definitions in <xref target="RFC6455"/>.
           Definitions in <xref target="RFC6455"/> not overridden by this document such as Error Handling or Extensions are still valid.
         </t>
@@ -85,12 +85,12 @@
       To establish a WebSocket connection, a client need to decide the protocol to use by the following steps.
       <list style="numbers">
         <t>
-          If the client has an HTTP/2.0 session established by previous requests and it knows that the session supports WebSocket over HTTP/2.0 by the SETTINGS_SUPPORTED_SCHEMES notification, the client SHOULD create a new HTTP/2.0 stream in the existing HTTP/2.0 session and start the opening handshake on it with an appropriate scheme.
-          Both of WebSocket (ws) and secure WebSocket (wss) could share the same HTTP/2.0 session.
+          If the client has an HTTP/2.0 connection established by previous requests and it knows that the connection supports WebSocket over HTTP/2.0 by the SETTINGS_SUPPORTED_SCHEMES notification, the client SHOULD create a new HTTP/2.0 stream in the existing HTTP/2.0 connection and start the opening handshake on it with an appropriate scheme.
+          Both of WebSocket (ws) and secure WebSocket (wss) could share the same HTTP/2.0 connection.
         </t>
         <t>
           If the client is going to establish a secure WebSocket connection, create a WebSocket connection over TLS with Application Layer Protocol Negotiation (ALPN) <xref target="ALPN draft" />.
-          The client SHOULD sends one or two of the following application protocols as ProtocolNameList as specified in <xref target="ALPN draft" /> in any order.
+          The client SHOULD send one or two of the following application protocols as ProtocolNameList as specified in <xref target="ALPN draft" /> in any order.
           <list style="symbols">
             <t>
               "HTTP/1.1[wss]" for the native WebSocket over TLS
@@ -102,11 +102,11 @@
           If the server does not support ALPN, the client SHOULD establish a TLS connection and start a native WebSocket opening handshake.
           If the server returns "no_application_protocol" alert, the client MUST <spanx style="emph">Fail the WebSocket connection</spanx>.
           If the server selects "HTTP/1.1[wss]" protocol, the client SHOULD establish a TLS connection and start a native WebSocket opening handshake.
-          If the server selects "HTTP/2.0[wss]" protocol, the client SHOULD create an HTTP/2.0 session, create an HTTP/2.0 stream on it and start the WebSocket opening handshake on the stream with "wss" scheme.
+          If the server selects "HTTP/2.0[wss]" protocol, the client SHOULD create an HTTP/2.0 connection, create an HTTP/2.0 stream on it and start the WebSocket opening handshake on the stream with "wss" scheme.
         </t>
         <t>
           If the client is going to establish a non-secure WebSocket connection, try the native WebSocket protocol negotiation.
-          If the server advertises WebSocket over HTTP/2.0 in its opening handshake via an Alternate-Protocol header, the client MAY switch its protocol to WebSocket over HTTP/2.0. Otherwise, the client continue to use the WebSocket protocol.
+          If the server advertises WebSocket over HTTP/2.0 in its opening handshake via an Alternate-Protocol header, the client MAY switch its protocol to WebSocket over HTTP/2.0. Otherwise, the client continue to use the native WebSocket protocol.
           <list style="empty">
             <t>EXAMPLE:
             <vspace blankLines='1'/>
@@ -138,7 +138,7 @@
               </figure>
             </t>
           </list>
-            If the client wants to switch its protocol, the client SHOULD send a Close frame with code 1006 and reason like “Switching Protocols: 443:http/2;websocket” after the opening handshake, then close its connection as soon as possible.
+            If the client wants to switch its protocol, the client SHOULD send a Close frame with code 1006 and reason like “Switching Protocols: 443:http/2;websocket” after the opening handshake, then close the WebSocket connection as soon as possible.
             These transactions MUST be hidden and MUST NOT be notified to upper layers like the JavaScript event queue.
             Then, the client SHOULD reconnect to the advertised server via HTTP/2.0.
         </t>
@@ -153,7 +153,7 @@
           By default, a client can send HEADERS frames with schemes advertised by the selected ALPN protocol.
           A server SHOULD send a SETTINGS frame as soon as possible whether it supports other schemes or not.
           Here is a proposed ID and value which should be defined in the HTTP/2.0 specification.
-          If the server received a HEADERS with an unsupported scheme, the server MUST reset the stream.
+          If the server received a HEADERS with an unsupported scheme, the server MUST send an RST_STREAM frame.
         </t>
         <t>
           9 - SETTINGS_SUPPORTED_SCHEMES allows the sender to inform the remote endpoint the supported protocol schemes.
@@ -171,7 +171,7 @@
       <section title="Handshake Request">
         <t>
           The client initiates an opening handshake by sending a HEADERS frame.
-          The frame MUST NOT set the END_STREAM because WebSocket intends to establish a bi-directional communication port and to send arbitrary data after success in opening handshake.
+          The frame MUST NOT set the END_STREAM flag because WebSocket intends to establish a bi-directional communication port and to send arbitrary data after success in opening handshake.
 
           The HEADERS Name/Value section will contain all of the following headers which are associated with the WebSocket protocol <xref target="RFC6455" /> opening handshake.
           Upgrade, Connection, Sec-WebSocket-Key, and Sec-WebSocket-Version headers MUST NOT be included because we do not have to take care of protocol upgrading or verification over HTTP.
@@ -209,11 +209,11 @@
       <section title="Handshake Response">
         <t>
           The server responds to a client request with a HEADERS frame.
-          If the server intends to allow the client connection, the HEADERS frame MUST NOT set the END_STREAM and MUST have “:status” containing “101”.
+          If the server intends to allow the client connection, the HEADERS frame MUST NOT set the END_STREAM flag and MUST have “:status” containing “101”.
           Any status code other than 101 indicates that the WebSocket handshake has not completed and that the semantics of HTTP still apply.
           The client MAY send some data to the server before receiving the successful response.
           The server MUST ignore this data when opening handshake fails. After sending successful response, the server can send arbitrary data frames at any time.
-          The response status line is unfolded into name/value pairs like other WebSocket headers and MUST be present: “:status” - The WebSocket or fallback HTTP response status code (e.g. “101” or “101 Switching Protocols”. See <xref target="RFC6455" />).
+          The response status line is unfolded into name/value pairs like other WebSocket handshake headers and MUST be present: “:status” - The WebSocket or fallback HTTP response status code (e.g. “101” or “101 Switching Protocols”. See <xref target="RFC6455" />).
 
           In addition, the following OPTIONAL name/value pairs MAY be present:
           <list style="empty">
@@ -232,7 +232,7 @@
     <section title="Data Framing" anchor="framing">
       <section title="Overview">
         <t>
-          <xref target="RFC6455"/> states that data is transmitted using a sequence of frames.
+          <xref target="RFC6455"/> states that data is transmitted using a sequence of WebSocket frames.
           This protocol follows that abstraction.
           This section corresponds to "5. Data Framing" section in <xref target="RFC6455"/> and specifies the following things:
           <list style="symbols">
@@ -262,12 +262,12 @@
             This plan is almost same as Plan D, but it uses END_SEGMENT flag in a DATA frame to make intermediaries enable to flush data appropriately without understanding the embedded WebSocket framing.
           </t>
           <t>
-            An endpoint MUST set END_SEGMENT on an HTTP/2.0 DATA frame containing the end of a WebSocket message.
+            An endpoint MUST set END_SEGMENT on an HTTP/2.0 DATA frame containing the end of a WebSocket frame with FIN flag set.
           </t>
         </section>
         <section title="HEADERS + DATAs (Plan C)">
           <t>
-            In this plan, an HTTP/2.0 HEADERS frame preceding multiple DATA frames represent a WebSocket frame.
+            In this plan, an HTTP/2.0 HEADERS frame preceding multiple DATA frames represents a WebSocket frame.
             END_SEGMENT flag MUST be set at the last HTTP/2.0 DATA frame for each WebSocket frame.
             That is, WebSocket over HTTP/2.0 defines <spanx style="emph">segment</spanx> in <xref target="HTTP/2.0 draft"/> as <spanx style="emph">WebSocket frame</spanx>.
             The WebSocket frame headers are stored in the HEADERS frame in the following manner.
@@ -371,7 +371,7 @@
       <section title='Abnormal Closures'>
         <section title='Client-Initiated Closure'>
           <t>
-            If at any point the underlying HTTP/2.0 stream is unexpectedly reset, the client MUST <spanx style="emph">Fail the WebSocket Connection</spanx>.
+            If at any point the underlying HTTP/2.0 stream is unexpectedly terminated, the client MUST <spanx style="emph">Fail the WebSocket Connection</spanx>.
           </t>
           <t>
             Except as indicated above or as specified by the application layer

@@ -120,7 +120,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 1.1.  Document Organization
 
    WebSocket over HTTP/2.0 is a protocol that layers the WebSocket
-   protocol over HTTP/2.0 framing rather than TCP connection.  This
+   protocol over HTTP/2.0 stream rather than TCP connection.  This
    document introduces some abstractions and overrides some definitions
    in [RFC6455].  Definitions in [RFC6455] not overridden by this
    document such as Error Handling or Extensions are still valid.
@@ -230,18 +230,18 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    To establish a WebSocket connection, a client need to decide the
    protocol to use by the following steps.
 
-   1.  If the client has an HTTP/2.0 session established by previous
-       requests and it knows that the session supports WebSocket over
+   1.  If the client has an HTTP/2.0 connection established by previous
+       requests and it knows that the connection supports WebSocket over
        HTTP/2.0 by the SETTINGS_SUPPORTED_SCHEMES notification, the
        client SHOULD create a new HTTP/2.0 stream in the existing
-       HTTP/2.0 session and start the opening handshake on it with an
+       HTTP/2.0 connection and start the opening handshake on it with an
        appropriate scheme.  Both of WebSocket (ws) and secure WebSocket
-       (wss) could share the same HTTP/2.0 session.
+       (wss) could share the same HTTP/2.0 connection.
 
    2.  If the client is going to establish a secure WebSocket
        connection, create a WebSocket connection over TLS with
        Application Layer Protocol Negotiation (ALPN) [ALPN draft].  The
-       client SHOULD sends one or two of the following application
+       client SHOULD send one or two of the following application
        protocols as ProtocolNameList as specified in [ALPN draft] in any
        order.
 
@@ -256,16 +256,16 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
        "HTTP/1.1[wss]" protocol, the client SHOULD establish a TLS
        connection and start a native WebSocket opening handshake.  If
        the server selects "HTTP/2.0[wss]" protocol, the client SHOULD
-       create an HTTP/2.0 session, create an HTTP/2.0 stream on it and
-       start the WebSocket opening handshake on the stream with "wss"
-       scheme.
+       create an HTTP/2.0 connection, create an HTTP/2.0 stream on it
+       and start the WebSocket opening handshake on the stream with
+       "wss" scheme.
 
    3.  If the client is going to establish a non-secure WebSocket
        connection, try the native WebSocket protocol negotiation.  If
        the server advertises WebSocket over HTTP/2.0 in its opening
        handshake via an Alternate-Protocol header, the client MAY switch
        its protocol to WebSocket over HTTP/2.0.  Otherwise, the client
-       continue to use the WebSocket protocol.
+       continue to use the native WebSocket protocol.
 
           EXAMPLE:
 
@@ -302,7 +302,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
        If the client wants to switch its protocol, the client SHOULD
        send a Close frame with code 1006 and reason like "Switching
        Protocols: 443:http/2;websocket" after the opening handshake,
-       then close its connection as soon as possible.  These
+       then close the WebSocket connection as soon as possible.  These
        transactions MUST be hidden and MUST NOT be notified to upper
        layers like the JavaScript event queue.  Then, the client SHOULD
        reconnect to the advertised server via HTTP/2.0.
@@ -316,7 +316,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    as soon as possible whether it supports other schemes or not.  Here
    is a proposed ID and value which should be defined in the HTTP/2.0
    specification.  If the server received a HEADERS with an unsupported
-   scheme, the server MUST reset the stream.
+   scheme, the server MUST send an RST_STREAM frame.
 
    9 - SETTINGS_SUPPORTED_SCHEMES allows the sender to inform the remote
    endpoint the supported protocol schemes.  The corresponding value
@@ -398,10 +398,10 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 4.1.  Handshake Request
 
    The client initiates an opening handshake by sending a HEADERS frame.
-   The frame MUST NOT set the END_STREAM because WebSocket intends to
-   establish a bi-directional communication port and to send arbitrary
-   data after success in opening handshake.  The HEADERS Name/Value
-   section will contain all of the following headers which are
+   The frame MUST NOT set the END_STREAM flag because WebSocket intends
+   to establish a bi-directional communication port and to send
+   arbitrary data after success in opening handshake.  The HEADERS Name/
+   Value section will contain all of the following headers which are
    associated with the WebSocket protocol [RFC6455] opening handshake.
    Upgrade, Connection, Sec-WebSocket-Key, and Sec-WebSocket-Version
    headers MUST NOT be included because we do not have to take care of
@@ -439,8 +439,8 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
    The server responds to a client request with a HEADERS frame.  If the
    server intends to allow the client connection, the HEADERS frame MUST
-   NOT set the END_STREAM and MUST have ":status" containing "101".  Any
-   status code other than 101 indicates that the WebSocket handshake has
+   NOT set the END_STREAM flag and MUST have ":status" containing "101".
+   Any status code other than 101 indicates that the WebSocket handshake
 
 
 
@@ -449,14 +449,14 @@ Hirano                   Expires August 17, 2014                [Page 8]
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
-   not completed and that the semantics of HTTP still apply.  The client
-   MAY send some data to the server before receiving the successful
-   response.  The server MUST ignore this data when opening handshake
-   fails.  After sending successful response, the server can send
-   arbitrary data frames at any time.  The response status line is
-   unfolded into name/value pairs like other WebSocket headers and MUST
-   be present: ":status" - The WebSocket or fallback HTTP response
-   status code (e.g. "101" or "101 Switching Protocols".  See
+   has not completed and that the semantics of HTTP still apply.  The
+   client MAY send some data to the server before receiving the
+   successful response.  The server MUST ignore this data when opening
+   handshake fails.  After sending successful response, the server can
+   send arbitrary data frames at any time.  The response status line is
+   unfolded into name/value pairs like other WebSocket handshake headers
+   and MUST be present: ":status" - The WebSocket or fallback HTTP
+   response status code (e.g. "101" or "101 Switching Protocols".  See
    [RFC6455]).  In addition, the following OPTIONAL name/value pairs MAY
    be present:
 
@@ -509,10 +509,10 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 5.1.  Overview
 
-   [RFC6455] states that data is transmitted using a sequence of frames.
-   This protocol follows that abstraction.  This section corresponds to
-   "5.  Data Framing" section in [RFC6455] and specifies the following
-   things:
+   [RFC6455] states that data is transmitted using a sequence of
+   WebSocket frames.  This protocol follows that abstraction.  This
+   section corresponds to "5.  Data Framing" section in [RFC6455] and
+   specifies the following things:
 
    o  The representation of a WebSocket frame.
 
@@ -541,12 +541,12 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    without understanding the embedded WebSocket framing.
 
    An endpoint MUST set END_SEGMENT on an HTTP/2.0 DATA frame containing
-   the end of a WebSocket message.
+   the end of a WebSocket frame with FIN flag set.
 
 5.2.3.  HEADERS + DATAs (Plan C)
 
    In this plan, an HTTP/2.0 HEADERS frame preceding multiple DATA
-   frames represent a WebSocket frame.  END_SEGMENT flag MUST be set at
+   frames represents a WebSocket frame.  END_SEGMENT flag MUST be set at
    the last HTTP/2.0 DATA frame for each WebSocket frame.  That is,
    WebSocket over HTTP/2.0 defines _segment_ in [HTTP/2.0 draft] as
    _WebSocket frame_.  The WebSocket frame headers are stored in the
@@ -681,8 +681,8 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 6.2.1.  Client-Initiated Closure
 
-   If at any point the underlying HTTP/2.0 stream is unexpectedly reset,
-   the client MUST _Fail the WebSocket Connection_.
+   If at any point the underlying HTTP/2.0 stream is unexpectedly
+   terminated, the client MUST _Fail the WebSocket Connection_.
 
    Except as indicated above or as specified by the application layer
    (e.g. a script using the WebSocket API), clients SHOULD NOT close the
