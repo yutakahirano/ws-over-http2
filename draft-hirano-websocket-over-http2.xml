@@ -85,7 +85,7 @@
       To establish a WebSocket connection, a client need to decide the protocol to use by the following steps.
       <list style="numbers">
         <t>
-          If the client has an HTTP/2.0 session established by previous requests and it knows that the session supports WebSocket over HTTP/2.0 by the SETTINGS_SUPPORTING_SCHEMES notification, the client SHOULD create a new HTTP/2.0 stream in the existing HTTP/2.0 session and start the opening handshake on it with an appropriate scheme.
+          If the client has an HTTP/2.0 session established by previous requests and it knows that the session supports WebSocket over HTTP/2.0 by the SETTINGS_SUPPORTED_SCHEMES notification, the client SHOULD create a new HTTP/2.0 stream in the existing HTTP/2.0 session and start the opening handshake on it with an appropriate scheme.
           Both of WebSocket (ws) and secure WebSocket (wss) could share the same HTTP/2.0 session.
         </t>
         <t>
@@ -145,7 +145,7 @@
       </list>
       </t>
 
-      <section title="Supporting scheme negotiation using SETTINGS frame">
+      <section title="Supported scheme negotiation using SETTINGS frame">
         <t>
           <spanx style="emph">THIS SECTION SHOULD BE INTRODUCED IN THE HTTP/2.0 SPEC</spanx>.
         </t>
@@ -156,7 +156,7 @@
           If the server received a HEADERS with an unsupported scheme, the server MUST reset the stream.
         </t>
         <t>
-          9 - SETTINGS_SUPPORTING_SCHEMES allows the sender to inform the remote endpoint the supporting protocol schemes.
+          9 - SETTINGS_SUPPORTED_SCHEMES allows the sender to inform the remote endpoint the supported protocol schemes.
           The corresponding value must be a 32-bit value, and which contains flags as follows:
           <list style = "empty">
             <t>bit 0: http</t>
@@ -185,7 +185,7 @@
               “:host”: /host:port/ (e.g. “www.example.com:1234”) as used in the “Client Requirements” section of the WebSocket protocol specification. (See <xref target="RFC6455" />)
             </t>
             <t>
-            “:version”: the WebSocket protocol version of this request. (MUST be “WebSocket/8”, “WebSocket/13”, or so. The number MUST be matched with the Sec-WebSocket-Version header. See <xref target="RFC6455" />)
+            “:version”: the WebSocket protocol version of this request. (MUST be “WebSocket/13” or so. The number MUST be matched with the Sec-WebSocket-Version header. See <xref target="RFC6455" />)
             </t>
             <t>
             “:scheme”: the scheme portion of the URI. (MUST be “ws” or “wss”. See also /secure/ flag in <xref target="RFC6455" />)
