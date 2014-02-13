@@ -272,15 +272,50 @@
             That is, WebSocket over HTTP/2.0 defines <spanx style="emph">segment</spanx> in <xref target="HTTP/2.0 draft"/> as <spanx style="emph">WebSocket frame</spanx>.
             The WebSocket frame headers are stored in the HEADERS frame in the following manner.
             <list style="symbols">
-              <t>The ":fin" header field MUST be set as "1" when the FIN WebSocket frame header is on.</t>
-              <t>The ":fin" header field MUST be removed when the FIN WebSocket frame header is off.</t>
-              <t>The ":rsv1" header field MUST be set as "1" when the RSV1 WebSocket frame header is on.</t>
-              <t>The ":rsv1" header field MUST be removed when the RSV1 WebSocket frame header is off.</t>
-              <t>The ":rsv2" header field MUST be set as "1" when the RSV2 WebSocket frame header is on.</t>
-              <t>The ":rsv2" header field MUST be removed when the RSV2 WebSocket frame header is off.</t>
-              <t>The ":rsv3" header field MUST be set as "1" when the RSV3 WebSocket frame header is on.</t>
-              <t>The ":rsv3" header field MUST be removed when the RSV3 WebSocket frame header is off.</t>
-              <t>The ":length" header field MUST be set as the hexadecimal text representation of the WebSocket LENGTH header.</t>
+              <t>
+                The ":fin" header field
+                <list style="empty">
+                  <t>
+                    If the FIN WebSocket frame header is set, the HEADERS frame MUST contain this field with value of "1".
+                    Otherwise the HEADERS frame MUST NOT contain this field.
+                  </t>
+                </list>
+              </t>
+              <t>
+                The ":rsv1" header field
+                <list style="empty">
+                  <t>
+                    If the RSV1 WebSocket frame header is set, the HEADERS frame MUST contain this field with value of "1".
+                    Otherwise the HEADERS frame MUST NOT contain this field.
+                  </t>
+                </list>
+              </t>
+              <t>
+                The ":rsv2" header field
+                <list style="empty">
+                  <t>
+                    If the RSV2 WebSocket frame header is set, the HEADERS frame MUST contain this field with value of "1".
+                    Otherwise the HEADERS frame MUST NOT contain this field.
+                  </t>
+                </list>
+              </t>
+              <t>
+                The ":rsv3" header field
+                <list style="empty">
+                  <t>
+                    If the RSV3 WebSocket frame header is set, the HEADERS frame MUST contain this field with value of "1".
+                    Otherwise the HEADERS frame MUST NOT contain this field.
+                  </t>
+                </list>
+              </t>
+              <t>
+                The ":length" header field
+                <list style="empty">
+                  <t>
+                    The HEADERS frame MUST contain this field with the hexadecimal text representation of the payload length represented by "Payload len" WebSocket header field and "Extended payload length" WebSocket header field" if present, without leading zeros.
+                  </t>
+                </list>
+              </t>
             </list>
           </t>
         </section>

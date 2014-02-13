@@ -561,43 +561,43 @@ Hirano                   Expires August 17, 2014               [Page 10]
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
-   o  The ":fin" header field MUST be set as "1" when the FIN WebSocket
-      frame header is on.
+   o  The ":fin" header field
 
-   o  The ":fin" header field MUST be removed when the FIN WebSocket
-      frame header is off.
+         If the FIN WebSocket frame header is set, the HEADERS frame
+         MUST contain this field with value of "1".  Otherwise the
+         HEADERS frame MUST NOT contain this field.
 
-   o  The ":rsv1" header field MUST be set as "1" when the RSV1
-      WebSocket frame header is on.
+   o  The ":rsv1" header field
 
-   o  The ":rsv1" header field MUST be removed when the RSV1 WebSocket
-      frame header is off.
+         If the RSV1 WebSocket frame header is set, the HEADERS frame
+         MUST contain this field with value of "1".  Otherwise the
+         HEADERS frame MUST NOT contain this field.
 
-   o  The ":rsv2" header field MUST be set as "1" when the RSV2
-      WebSocket frame header is on.
+   o  The ":rsv2" header field
 
-   o  The ":rsv2" header field MUST be removed when the RSV2 WebSocket
-      frame header is off.
+         If the RSV2 WebSocket frame header is set, the HEADERS frame
+         MUST contain this field with value of "1".  Otherwise the
+         HEADERS frame MUST NOT contain this field.
 
-   o  The ":rsv3" header field MUST be set as "1" when the RSV3
-      WebSocket frame header is on.
+   o  The ":rsv3" header field
 
-   o  The ":rsv3" header field MUST be removed when the RSV3 WebSocket
-      frame header is off.
+         If the RSV3 WebSocket frame header is set, the HEADERS frame
+         MUST contain this field with value of "1".  Otherwise the
+         HEADERS frame MUST NOT contain this field.
 
-   o  The ":length" header field MUST be set as the hexadecimal text
-      representation of the WebSocket LENGTH header.
+   o  The ":length" header field
+
+         The HEADERS frame MUST contain this field with the hexadecimal
+         text representation of the payload length represented by
+         "Payload len" WebSocket header field and "Extended payload
+         length" WebSocket header field" if present, without leading
+         zeros.
 
 5.3.  Masking
 
    [RFC6455] defines the masking mechanism which masks WebSocket frame
    data payload with a random masking-key.  On WebSocket over HTTP/2.0,
    masking mechanism MUST be disabled.
-
-
-
-
-
 
 
 
@@ -627,7 +627,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
    To _Close the WebSocket Connection_, an endpoint closes the
    underlying HTTP/2.0 stream.  If the stream is already closed, the
-   endpoint MUST do nothing.  Otherwise, the endpoint MUST send a
+   endpoint MUST do nothing.  Otherwise, the endpoint MUST send an
    RST_STREAM frame with an appropriate error code.
 
 6.1.2.  Start the WebSocket Closing Handshake
