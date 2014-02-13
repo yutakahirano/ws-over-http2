@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<reference anchor='RFC6455'>
+
+<front>
+<title>The WebSocket Protocol</title>
+<author initials='I.' surname='Fette' fullname='I. Fette'>
+<organization /></author>
+<author initials='A.' surname='Melnikov' fullname='A. Melnikov'>
+<organization /></author>
+<date year='2011' month='December' />
+<abstract>
+<t>The WebSocket Protocol enables two-way communication between a client running untrusted code in a controlled environment to a remote host that has opted-in to communications from that code.  The security model used for this is the origin-based security model commonly used by web browsers.  The protocol consists of an opening handshake followed by basic message framing, layered over TCP.  The goal of this technology is to provide a mechanism for browser-based applications that need two-way communication with servers that does not rely on opening multiple HTTP connections (e.g., using XMLHttpRequest or &amp;lt;iframe&amp;gt;s and long polling). [STANDARDS-TRACK]</t></abstract></front>
+
+<seriesInfo name='RFC' value='6455' />
+<format type='TXT' octets='162067' target='http://www.rfc-editor.org/rfc/rfc6455.txt' />
+</reference>
