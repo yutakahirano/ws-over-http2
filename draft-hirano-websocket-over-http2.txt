@@ -3,11 +3,11 @@
 
 HTTPbis Working Group                                          Y. Hirano
 Internet-Draft                                              Google, Inc.
-Intended status: Standards Track                       February 12, 2014
-Expires: August 16, 2014
+Intended status: Standards Track                       February 13, 2014
+Expires: August 17, 2014
 
 
-                  Compression Extensions for WebSocket
+                        WebSocket over HTTP/2.0
                draft-hirano-httpbis-websocket-over-http2
 
 Abstract
@@ -17,10 +17,9 @@ Abstract
    that has opted-in to communications from that code.  Since it
    requires one TCP connection for every WebSocket connection, having
    multiple WebSocket connections between the same client and the same
-   server, for example, a browser has many connections to a server over
-   multiple tabs, is inefficient.  On the other hand, HTTP/2.0 specifies
-   a fast, secure, multiplexed framing protocol.  This document provides
-   bi-directional multiplxed communication on the top of HTTP/2.0.
+   server is inefficient.  On the other hand, HTTP/2.0 specifies a fast,
+   secure, multiplexed framing protocol.  This document provides bi-
+   directional multiplexed communication on the top of HTTP/2.0.
 
    Please send feedback to the httpbis@ietf.org mailing list.
 
@@ -39,7 +38,7 @@ Status of this Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 16, 2014.
+   This Internet-Draft will expire on August 17, 2014.
 
 Copyright Notice
 
@@ -49,15 +48,15 @@ Copyright Notice
    This document is subject to BCP 78 and the IETF Trust's Legal
    Provisions Relating to IETF Documents
    (http://trustee.ietf.org/license-info) in effect on the date of
-
-
-
-Hirano                   Expires August 16, 2014                [Page 1]
-
-Internet-Draft    Compression Extensions for WebSocket     February 2014
-
-
    publication of this document.  Please review these documents
+
+
+
+Hirano                   Expires August 17, 2014                [Page 1]
+
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
+
+
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
@@ -68,6 +67,7 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 Table of Contents
 
    1.  Introduction . . . . . . . . . . . . . . . . . . . . . . . . .  3
+     1.1.  Document Organization  . . . . . . . . . . . . . . . . . .  3
    2.  Conformance Requirements and Terminology . . . . . . . . . . .  4
    3.  Cross Protocol Negotiation . . . . . . . . . . . . . . . . . .  5
      3.1.  Supporting scheme negotiation using SETTINGS frame . . . .  6
@@ -82,41 +82,53 @@ Table of Contents
                (Plan A) . . . . . . . . . . . . . . . . . . . . . . . 10
        5.2.3.  HEADERS + DATAs (Plan C) . . . . . . . . . . . . . . . 10
      5.3.  Masking  . . . . . . . . . . . . . . . . . . . . . . . . . 11
-   6.  Alternative Framing Design . . . . . . . . . . . . . . . . . . 12
-   7.  Sending and Receiving Data . . . . . . . . . . . . . . . . . . 13
-   8.  Closing the Connection . . . . . . . . . . . . . . . . . . . . 14
-     8.1.  Definitions  . . . . . . . . . . . . . . . . . . . . . . . 14
-       8.1.1.  Close the WebSocket Connection . . . . . . . . . . . . 14
-       8.1.2.  Start the WebSocket Closing Handshake  . . . . . . . . 14
-       8.1.3.  The WebSocket Closing Handshake is Started . . . . . . 14
-       8.1.4.  The WebSocket Connection is Closed . . . . . . . . . . 15
-       8.1.5.  The WebSocket Connection Close Code  . . . . . . . . . 15
-       8.1.6.  The WebSocket Connection Close Reason  . . . . . . . . 15
-       8.1.7.  Fail the WebSocket Connection  . . . . . . . . . . . . 15
-     8.2.  Abnormal Closures  . . . . . . . . . . . . . . . . . . . . 15
-       8.2.1.  Client-Initiated Closure . . . . . . . . . . . . . . . 15
-       8.2.2.  Server-initiated closure . . . . . . . . . . . . . . . 15
-       8.2.3.  Recovering from Abnormal Closure . . . . . . . . . . . 15
-     8.3.  Normal Closure of Connections  . . . . . . . . . . . . . . 15
-     8.4.  Status Codes . . . . . . . . . . . . . . . . . . . . . . . 16
-   9.  Security Considerations  . . . . . . . . . . . . . . . . . . . 17
-   10. IANA Considerations  . . . . . . . . . . . . . . . . . . . . . 18
-   11. References . . . . . . . . . . . . . . . . . . . . . . . . . . 19
-     11.1. Normative References . . . . . . . . . . . . . . . . . . . 19
-     11.2. Informative References . . . . . . . . . . . . . . . . . . 19
-   Author's Address . . . . . . . . . . . . . . . . . . . . . . . . . 20
+   6.  Closing the Connection . . . . . . . . . . . . . . . . . . . . 12
+     6.1.  Definitions  . . . . . . . . . . . . . . . . . . . . . . . 12
+       6.1.1.  Close the WebSocket Connection . . . . . . . . . . . . 12
+       6.1.2.  Start the WebSocket Closing Handshake  . . . . . . . . 12
+       6.1.3.  The WebSocket Closing Handshake is Started . . . . . . 12
+       6.1.4.  The WebSocket Connection is Closed . . . . . . . . . . 12
+       6.1.5.  The WebSocket Connection Close Code  . . . . . . . . . 12
+       6.1.6.  The WebSocket Connection Close Reason  . . . . . . . . 12
+       6.1.7.  Fail the WebSocket Connection  . . . . . . . . . . . . 13
+     6.2.  Abnormal Closures  . . . . . . . . . . . . . . . . . . . . 13
+       6.2.1.  Client-Initiated Closure . . . . . . . . . . . . . . . 13
+       6.2.2.  Server-initiated closure . . . . . . . . . . . . . . . 13
+       6.2.3.  Recovering from Abnormal Closure . . . . . . . . . . . 13
+     6.3.  Normal Closure of Connections  . . . . . . . . . . . . . . 13
+     6.4.  Status Codes . . . . . . . . . . . . . . . . . . . . . . . 13
+   7.  Security Considerations  . . . . . . . . . . . . . . . . . . . 14
+   8.  IANA Considerations  . . . . . . . . . . . . . . . . . . . . . 15
+   9.  References . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+     9.1.  Normative References . . . . . . . . . . . . . . . . . . . 16
+     9.2.  Informative References . . . . . . . . . . . . . . . . . . 16
+   Author's Address . . . . . . . . . . . . . . . . . . . . . . . . . 17
 
 
 
-Hirano                   Expires August 16, 2014                [Page 2]
+
+
+Hirano                   Expires August 17, 2014                [Page 2]
 
-Internet-Draft    Compression Extensions for WebSocket     February 2014
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 1.  Introduction
 
    TBD
 
+1.1.  Document Organization
+
+   WebSocket over HTTP/2.0 is a protocol that layers the WebSocket
+   protocol over HTTP/2.0 framing rather than TCP connection.  This
+   document introduces some abstractions and overrides some definitions
+   defined in [RFC6455].  Definitions in [RFC6455] not overridden by
+   this document such as Error Handling or Extensions are still valid.
+
+   Section 3 describes how to choose the protocol between the native
+   WebSocket and WebSocket over HTTP/2.0.  Each of Section 4, Section 5
+   and Section 6 overrides definitions and rules in its counterpart in
+   [RFC6455].
 
 
 
@@ -152,21 +164,9 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                   Expires August 16, 2014                [Page 3]
+Hirano                   Expires August 17, 2014                [Page 3]
 
-Internet-Draft    Compression Extensions for WebSocket     February 2014
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 2.  Conformance Requirements and Terminology
@@ -190,8 +190,8 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
    "Frame" has two meanings, WebSocket frame and HTTP/2.0 frame.  When
    it is obvious "WebSocket" and "HTTP/2.0" can be omitted.  For
-   example, "DATA frame" means "HTTP/2.0 DATA frame" and "CLOSE frame"
-   means "WebSocket CLOSE frame".
+   example, "DATA frame" means "HTTP/2.0 DATA frame" and "Close frame"
+   means "WebSocket Close frame".
 
 
 
@@ -220,9 +220,9 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
 
 
-Hirano                   Expires August 16, 2014                [Page 4]
+Hirano                   Expires August 17, 2014                [Page 4]
 
-Internet-Draft    Compression Extensions for WebSocket     February 2014
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 3.  Cross Protocol Negotiation
@@ -230,7 +230,7 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
    To establish a WebSocket connection, a client need to decide the
    protocol to use by the following steps.
 
-   1.  If the client has a HTTP/2.0 session established by previous
+   1.  If the client has an HTTP/2.0 session established by previous
        requests and it knows that the session supports WebSocket over
        HTTP/2.0 by the SETTINGS_SUPPORTING_SCHEMES notification, the
        client SHOULD create a new HTTP/2.0 stream in the existing
@@ -239,10 +239,11 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
        (wss) could share the same HTTP/2.0 session.
 
    2.  If the client is going to establish a secure WebSocket
-       connection, create a WebSocket connection over TLS with [ALPN
-       draft].  The client SHOULD sends one or two of the following
-       application protocols as ProtocolNameList as specified in ALPN in
-       any order.
+       connection, create a WebSocket connection over TLS with
+       Application Layer Protocol Negotiation (ALPN) [ALPN draft].  The
+       client SHOULD sends one or two of the following application
+       protocols as ProtocolNameList as specified in [ALPN draft] in any
+       order.
 
        *  "HTTP/1.1[wss]" for the native WebSocket over TLS
 
@@ -255,15 +256,16 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
        "HTTP/1.1[wss]" protocol, the client SHOULD establish a TLS
        connection and start a native WebSocket opening handshake.  If
        the server selects "HTTP/2.0[wss]" protocol, the client SHOULD
-       create an HTTP/2.0 session and start the WebSocket opening
-       handshake on it with "wss" scheme.
+       create an HTTP/2.0 session, create an HTTP/2.0 stream on it and
+       start the WebSocket opening handshake on the stream with "wss"
+       scheme.
 
    3.  If the client is going to establish a non-secure WebSocket
        connection, try the native WebSocket protocol negotiation.  If
-       the server advertises WebSocket layering over HTTP/2.0 in its
-       opening handshake via an Alternate-Protocol header, the client
-       MAY switch its protocol to WebSocket over HTTP/2.0.  Otherwise,
-       the client continue to use the WebSocket protocol.
+       the server advertises WebSocket over HTTP/2.0 in its opening
+       handshake via an Alternate-Protocol header, the client MAY switch
+       its protocol to WebSocket over HTTP/2.0.  Otherwise, the client
+       continue to use the WebSocket protocol.
 
           EXAMPLE:
 
@@ -274,11 +276,9 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
 
 
-
-
-Hirano                   Expires August 16, 2014                [Page 5]
+Hirano                   Expires August 17, 2014                [Page 5]
 
-Internet-Draft    Compression Extensions for WebSocket     February 2014
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
             GET /chat HTTP/1.1
@@ -300,25 +300,23 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
             Alternate-Protocol: 443:http/2[http,ws]
 
        If the client wants to switch its protocol, the client SHOULD
-       send connection close frame with code 1006 and reason like
-       "Switching Protocols: 443:http/2;websocket" after the opening
-       handshake, then close its connection as soon as possible.  These
+       send a Close frame with code 1006 and reason like "Switching
+       Protocols: 443:http/2;websocket" after the opening handshake,
+       then close its connection as soon as possible.  These
        transactions MUST be hidden and MUST NOT be notified to upper
        layers like the JavaScript event queue.  Then, the client SHOULD
-       reconnect to the advertised server via HTTP/2.0.  The WebSocket
-       protocol allowed the server to send arbitrary frames after the
-       opening handshake.  These frames could be dropped in this case.
+       reconnect to the advertised server via HTTP/2.0.
 
 3.1.  Supporting scheme negotiation using SETTINGS frame
 
    _THIS SECTION SHOULD BE INTRODUCED IN THE HTTP/2.0 SPEC_.
 
-   By default, a client can send HEADERS frames on http and https
-   schemes.  A server SHOULD send a SETTINGS frame as soon as possible
-   whether it supports other schemes or not.  Here is a proposed ID and
-   value which should be defined in the HTTP/2.0 specification.  If the
-   server received a HEADERS with an unsupported scheme, the server MUST
-   reset the stream.
+   By default, a client can send HEADERS frames on schemes advertised by
+   the selected ALPN protocol.  A server SHOULD send a SETTINGS frame as
+   soon as possible whether it supports other schemes or not.  Here is a
+   proposed ID and value which should be defined in the HTTP/2.0
+   specification.  If the server received a HEADERS with an unsupported
+   scheme, the server MUST reset the stream.
 
    9 - SETTINGS_SUPPORTING_SCHEMES allows the sender to inform the
    remote endpoint the supporting protocol schemes.  The corresponding
@@ -328,16 +326,16 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
       bit 1: https
 
-
-
-
-
-Hirano                   Expires August 16, 2014                [Page 6]
-
-Internet-Draft    Compression Extensions for WebSocket     February 2014
-
-
       bit 2: ws
+
+
+
+
+
+Hirano                   Expires August 17, 2014                [Page 6]
+
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
+
 
       bit 3: wss
 
@@ -388,9 +386,11 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
 
 
-Hirano                   Expires August 16, 2014                [Page 7]
+
+
+Hirano                   Expires August 17, 2014                [Page 7]
 
-Internet-Draft    Compression Extensions for WebSocket     February 2014
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 4.  Opening Handshake
@@ -411,7 +411,7 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
       ":path": /resource name/ as used in the "Client Requirements"
       section of the WebSocket protocol specification.  (See [RFC6455])
 
-      ":host": /host:port/ (e.g. "www.google.com:1234") as used in the
+      ":host": /host:port/ (e.g. "www.example.com:1234") as used in the
       "Client Requirements" section of the WebSocket protocol
       specification.  (See [RFC6455])
 
@@ -433,22 +433,24 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
       ":sec-websocket-extensions" - the Sec-WebSocket-Extensions header
       (See [RFC6455])
 
+   Also, other HTTP compatible header name/value pairs MAY be present.
+
 4.2.  Handshake Response
 
    The server responds to a client request with a HEADERS frame.  If the
    server intends to allow the client connection, the HEADERS frame MUST
    NOT set the END_STREAM and MUST have ":status" containing "101".  Any
    status code other than 101 indicates that the WebSocket handshake has
+
+
+
+Hirano                   Expires August 17, 2014                [Page 8]
+
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
+
+
    not completed and that the semantics of HTTP still apply.  The client
    MAY send some data to the server before receiving the successful
-
-
-
-Hirano                   Expires August 16, 2014                [Page 8]
-
-Internet-Draft    Compression Extensions for WebSocket     February 2014
-
-
    response.  The server MUST ignore this data when opening handshake
    fails.  After sending successful response, the server can send
    arbitrary data frames at any time.  The response status line is
@@ -467,10 +469,10 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
    Also, other HTTP compatible header name/value pairs MAY be present.
    All header names MUST be lowercase.  The successful server response
    MUST have ":status" containing "101".  If the handshake fails, the
-   client MUST send a HTTP/2.0 data frame with empty data field to avoid
-   abnormal HTTP/2.0 session termination.  The HTTP/2.0 data frame MUST
-   set the END_STREAM to indicate the client intends to send no further
-   data on this stream.
+   client MUST send an HTTP/2.0 DATA frame with empty data field to
+   avoid abnormal HTTP/2.0 session termination.  The HTTP/2.0 DATA frame
+   MUST set the END_STREAM to indicate the client intends to send no
+   further data on this stream.
 
 
 
@@ -498,11 +500,9 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
 
 
-
-
-Hirano                   Expires August 16, 2014                [Page 9]
+Hirano                   Expires August 17, 2014                [Page 9]
 
-Internet-Draft    Compression Extensions for WebSocket     February 2014
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 5.  Data Framing
@@ -518,47 +518,47 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
    o  The masking mechanism.
 
-   For other things such as fragmentation and control frames, remain
+   Other things such as fragmentation and control frames remain
    unchanged.
 
 5.2.  Frame representation
 
    Several representations are proposed.  In each representation, an
-   endpoint MUST set END_STREAM flag at the last HTTP/2.0 frame of an
-   HTTP/2.0 stream.
+   endpoint MUST set END_STREAM flag at the last HTTP/2.0 frame it sends
+   on the WebSocket connection.
 
 5.2.1.  Tunnering RFC6455 framing (Plan D)
 
-   A WebSocket frame byte representation is embedded in payload in
-   HTTP/2.0 DATA frame.  DATA frames can be reframed, i.e.  One
+   The WebSocket frame byte representation is embedded in payload in
+   HTTP/2.0 DATA frame.  DATA frames can be re-framed, i.e.  One
    WebSocket frame can be split over multiple DATA frames and one DATA
    frames can contain multiple WebSocket frames.
 
 5.2.2.  Tunnering RFC6455 framing with END_SEGMENT mark (Plan A)
 
-   This plan is almost same as Plan D, but it uses END_SEGMANE flag in a
-   DATA frame.  END_SEGMENT flag is specified in [HTTP/2.0 draft] and it
-   indicates that the DATA frame is the last for the current segment.
+   This plan is almost same as Plan D, but it uses END_SEGMENT flag in a
+   DATA frame to make intermediaries enable to flush data appropriately
+   without understanding the embedded WebSocket framing.
 
-   An endpoint MUST turn on END_SEGMENT on an HTTP/2.0 DATA frame
-   containing the end of a WebSocket message.
+   An endpoint MUST set END_SEGMENT on an HTTP/2.0 DATA frame containing
+   the end of a WebSocket message.
 
 5.2.3.  HEADERS + DATAs (Plan C)
 
-   This plan represents a WebSocket frame by a HTTP/2.0 HEADERS frame
-   preceding multiple DATA frames.  END_SEGMENT flag MUST be turned on
-   at the end DATA frame of a WebSocket frame.  That is, the WebSocket
-   over HTTP/2.0 defines _segment_ in [HTTP/2.0 draft] as _WebSocket
-   frame_.  The WebSocket frame headers are stores in the HEADERS frame
-   in the following mannner.
+   In this plan, an HTTP/2.0 HEADERS frame preceding multiple DATA
+   frames represent a WebSocket frame.  END_SEGMENT flag MUST be set at
+   the last HTTP/2.0 DATA frame for each WebSocket frame.  That is,
+   WebSocket over HTTP/2.0 defines _segment_ in [HTTP/2.0 draft] as
+   _WebSocket frame_.  The WebSocket frame headers are stored in the
+   HEADERS frame in the following manner.
 
 
 
 
 
-Hirano                   Expires August 16, 2014               [Page 10]
+Hirano                   Expires August 17, 2014               [Page 10]
 
-Internet-Draft    Compression Extensions for WebSocket     February 2014
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
    o  The ":fin" header field MUST be set as "1" when the FIN WebSocket
@@ -585,14 +585,14 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
    o  The ":rsv3" header field MUST be removed when the RSV3 WebSocket
       frame header is off.
 
-   o  The ":length" header field MUST be set as the hexadecimal
+   o  The ":length" header field MUST be set as the hexadecimal text
       representation of the WebSocket LENGTH header.
 
 5.3.  Masking
 
    [RFC6455] defines the masking mechanism which masks WebSocket frame
-   data payload with a random masking-key.  On the WebSocket over
-   HTTP/2.0, masking mechanism MUST be disabled.
+   data payload with a random masking-key.  On WebSocket over HTTP/2.0,
+   masking mechanism MUST be disabled.
 
 
 
@@ -612,180 +612,38 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
 
 
-Hirano                   Expires August 16, 2014               [Page 11]
+Hirano                   Expires August 17, 2014               [Page 11]
 
-Internet-Draft    Compression Extensions for WebSocket     February 2014
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
-6.  Alternative Framing Design
+6.  Closing the Connection
 
-   Other framing plans which do not preserve [RFC6455] semantics are
-   also proposed.  If one of such plans is adopted, we can't reuse
-   [RFC6455] any more and we must specify more things than the current
-   draft.
+   Some definitions defined in [RFC6455] are overridden in this section.
 
+6.1.  Definitions
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                   Expires August 16, 2014               [Page 12]
-
-Internet-Draft    Compression Extensions for WebSocket     February 2014
-
-
-7.  Sending and Receiving Data
-
-   Same as Section 6 "Sending and Receiving Data" in [RFC6455]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                   Expires August 16, 2014               [Page 13]
-
-Internet-Draft    Compression Extensions for WebSocket     February 2014
-
-
-8.  Closing the Connection
-
-   Some definitions defined in [RFC6455] are overwritten in this
-   section.
-
-8.1.  Definitions
-
-8.1.1.  Close the WebSocket Connection
+6.1.1.  Close the WebSocket Connection
 
    To _Close the WebSocket Connection_, an endpoint closes the
-   underlying HTTP/2.0 stream.  An endpoint SHOULD use a method that
-   cleanly closes the stream if applicable.  An endpoint MAY close the
-   stream or the underlying HTTP/2.0 session via any means available
-   when necessary, such as when under attack.
+   underlying HTTP/2.0 stream.  If the stream is already closed, the
+   endpoint MUST do nothing.  Otherwise, the endpoint MUST send a
+   RST_STREAM frame with an appropriate error code.
 
-   The underlying TCP connection, in most normal cases, SHOULD be closed
-   first by the server, so that it holds the TIME_WAIT state and not the
-   client (as this would prevent it from re-opening the connection for 2
-   MSL, while there is no corresponding server impact as a TIME_WAIT
-   connection is immediately reopened upon a new SYN with a higher seq
-   number).  In abnormal cases (such as not having received a TCP Close
-   from the server after a reasonable amount of time) a client MAY
-   initiate the TCP Close.  As such, when a server is instructed to
-   _Close the WebSocket Connection_ it SHOULD initiate a TCP Close
-   immediately, and when a client is instructed to do the same, it
-   SHOULD wait for a TCP Close from the server.
-
-   As an example of how to obtain a clean closure in C using Berkeley
-   sockets, one would call shutdown() with SHUT_WR on the socket, call
-   recv() until obtaining a return value of 0 indicating that the peer
-   has also performed an orderly shutdown, and finally calling close()
-   on the socket.
-
-8.1.2.  Start the WebSocket Closing Handshake
+6.1.2.  Start the WebSocket Closing Handshake
 
    To _Start the WebSocket Closing Handshake_ with a status code
-   (Section 8.4) /code/ and an optional close reason (Section 8.1.6)
+   (Section 6.4) /code/ and an optional close reason (Section 6.1.6)
    /reason/, an endpoint MUST send a Close control frame, as described
    in [RFC6455] whose status code is set to /code/ and whose close
-   reason is set to /reason/.  The last HTTP/2.0 frame that containing
-   the WebSocket Close control frame MUST turn END_STREAM flag on.
+   reason is set to /reason/.  The last HTTP/2.0 frame of the WebSocket
+   Close control frame MUST turn END_STREAM flag on.
 
-8.1.3.  The WebSocket Closing Handshake is Started
+6.1.3.  The WebSocket Closing Handshake is Started
 
    Same as Section 7.1.3 in [RFC6455].
 
-
-
-
-
-
-Hirano                   Expires August 16, 2014               [Page 14]
-
-Internet-Draft    Compression Extensions for WebSocket     February 2014
-
-
-8.1.4.  The WebSocket Connection is Closed
+6.1.4.  The WebSocket Connection is Closed
 
    When the underlying HTTP stream is closed, it is said that _The
    WebSocket Connection is Closed_ and that the WebSocket connection is
@@ -796,21 +654,32 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
    If the WebSocket connection could not be established, it is also said
    that _The WebSocket Connection is Closed_, but not cleanly.
 
-8.1.5.  The WebSocket Connection Close Code
+6.1.5.  The WebSocket Connection Close Code
 
    Same as Section 7.1.5 in [RFC6455].
 
-8.1.6.  The WebSocket Connection Close Reason
+6.1.6.  The WebSocket Connection Close Reason
 
    Same as Section 7.1.6 in [RFC6455].
 
-8.1.7.  Fail the WebSocket Connection
+
+
+
+
+
+
+Hirano                   Expires August 17, 2014               [Page 12]
+
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
+
+
+6.1.7.  Fail the WebSocket Connection
 
    Same as Section 7.1.7 in [RFC6455].
 
-8.2.  Abnormal Closures
+6.2.  Abnormal Closures
 
-8.2.1.  Client-Initiated Closure
+6.2.1.  Client-Initiated Closure
 
    If at any point the underlying HTTP/2.0 stream is unexpectedly reset,
    the client MUST _Fail the WebSocket Connection_.
@@ -819,29 +688,19 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
    (e.g. a script using the WebSocket API), clients SHOULD NOT close the
    connection.
 
-8.2.2.  Server-initiated closure
+6.2.2.  Server-initiated closure
 
    Same as Section 7.2.2 in [RFC6455].
 
-8.2.3.  Recovering from Abnormal Closure
+6.2.3.  Recovering from Abnormal Closure
 
    Same as Section 7.2.3 in [RFC6455].
 
-8.3.  Normal Closure of Connections
+6.3.  Normal Closure of Connections
 
    Same as Section 7.3 in [RFC6455].
 
-
-
-
-
-
-Hirano                   Expires August 16, 2014               [Page 15]
-
-Internet-Draft    Compression Extensions for WebSocket     February 2014
-
-
-8.4.  Status Codes
+6.4.  Status Codes
 
    Same as Section 7.4 in [RFC6455].
 
@@ -865,39 +724,12 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                   Expires August 16, 2014               [Page 16]
+Hirano                   Expires August 17, 2014               [Page 13]
 
-Internet-Draft    Compression Extensions for WebSocket     February 2014
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
-9.  Security Considerations
+7.  Security Considerations
 
    [RFC6455] frame has the masking mechanism for two purposes.
 
@@ -905,8 +737,8 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
    o  To prevent TLS side-channel attacks such as [BEAST].
 
-   These should be addressed at the HTTP/2.0 framing layer and the
-   WebSocket over HTTP/2.0 has no masking mechanism.
+   These should be addressed at the HTTP/2.0 framing layer and WebSocket
+   over HTTP/2.0 has no masking mechanism.
 
 
 
@@ -948,17 +780,14 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
 
 
-Hirano                   Expires August 16, 2014               [Page 17]
+Hirano                   Expires August 17, 2014               [Page 14]
 
-Internet-Draft    Compression Extensions for WebSocket     February 2014
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
-10.  IANA Considerations
+8.  IANA Considerations
 
-
-
-
-
+   TBD
 
 
 
@@ -1004,17 +833,17 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
 
 
-Hirano                   Expires August 16, 2014               [Page 18]
+
+
+
+Hirano                   Expires August 17, 2014               [Page 15]
 
-Internet-Draft    Compression Extensions for WebSocket     February 2014
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
-11.  References
+9.  References
 
-11.1.  Normative References
-
-   [RFC5234]  Crocker, D. and P. Overell, "Augmented BNF for Syntax
-              Specifications: ABNF", STD 68, RFC 5234, January 2008.
+9.1.  Normative References
 
    [RFC6455]  Fette, I. and A. Melnikov, "The WebSocket Protocol",
               RFC 6455, December 2011.
@@ -1031,7 +860,7 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
               "Transport Layer Security (TLS) Application Layer Protocol
               Negotiation Extension", January 2014.
 
-11.2.  Informative References
+9.2.  Informative References
 
    [BEAST]    Duong, T. and J. Rizzo, "The BEAST attack".
 
@@ -1060,9 +889,12 @@ Internet-Draft    Compression Extensions for WebSocket     February 2014
 
 
 
-Hirano                   Expires August 16, 2014               [Page 19]
+
+
+
+Hirano                   Expires August 17, 2014               [Page 16]
 
-Internet-Draft    Compression Extensions for WebSocket     February 2014
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 Author's Address
@@ -1116,5 +948,5 @@ Author's Address
 
 
 
-Hirano                   Expires August 16, 2014               [Page 20]
+Hirano                   Expires August 17, 2014               [Page 17]
 
