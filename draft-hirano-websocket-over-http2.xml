@@ -267,7 +267,7 @@
         </section>
         <section title="HEADERS + DATAs (Plan C)">
           <t>
-            In this plan, an HTTP/2.0 HEADERS frame preceding multiple DATA frames represents a WebSocket frame.
+            In this plan, an HTTP/2.0 HEADERS frame and subsequent multiple DATA frames represent a WebSocket frame.
             END_SEGMENT flag MUST be set at the last HTTP/2.0 DATA frame for each WebSocket frame.
             That is, WebSocket over HTTP/2.0 defines <spanx style="emph">segment</spanx> in <xref target="HTTP/2.0 draft"/> as <spanx style="emph">WebSocket frame</spanx>.
             The WebSocket frame headers are stored in the HEADERS frame in the following manner.

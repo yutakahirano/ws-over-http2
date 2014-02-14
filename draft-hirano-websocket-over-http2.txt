@@ -545,8 +545,8 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 5.2.3.  HEADERS + DATAs (Plan C)
 
-   In this plan, an HTTP/2.0 HEADERS frame preceding multiple DATA
-   frames represents a WebSocket frame.  END_SEGMENT flag MUST be set at
+   In this plan, an HTTP/2.0 HEADERS frame and subsequent multiple DATA
+   frames represent a WebSocket frame.  END_SEGMENT flag MUST be set at
    the last HTTP/2.0 DATA frame for each WebSocket frame.  That is,
    WebSocket over HTTP/2.0 defines _segment_ in [HTTP/2.0 draft] as
    _WebSocket frame_.  The WebSocket frame headers are stored in the
