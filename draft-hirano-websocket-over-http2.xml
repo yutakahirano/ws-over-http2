@@ -43,12 +43,12 @@
 
       <section title="Document Organization">
         <t>
-          WebSocket over HTTP/2.0 is a protocol that layers the WebSocket protocol over HTTP/2.0 stream rather than TCP connection.
+          WebSocket over HTTP/2.0 is a protocol that layers the WebSocket protocol over an HTTP/2.0 stream rather than a TCP connection.
           This document introduces some abstractions and overrides some definitions in <xref target="RFC6455"/>.
           Definitions in <xref target="RFC6455"/> not overridden by this document such as Error Handling or Extensions are still valid.
         </t>
         <t>
-          <xref target="protocol_negotiation"/> describes how to choose the protocol to use between the native WebSocket and WebSocket over HTTP/2.0 for each server.
+          <xref target="protocol_negotiation"/> describes how to choose the protocol to use between native WebSocket and WebSocket over HTTP/2.0 for each server.
           Each of <xref target="opening_handshake"/>, <xref target="framing"/> and <xref target="closing_connection"/> overrides definitions and rules in its counterpart in <xref target="RFC6455"/>.
         </t>
       </section>
@@ -82,7 +82,7 @@
 
     <section title="Cross Protocol Negotiation" anchor="protocol_negotiation">
       <t>
-      To establish a WebSocket connection, a client need to decide the protocol to use by the following steps.
+      To establish a WebSocket connection, a client needs to decide the protocol to use by the following steps.
       <list style="numbers">
         <t>
           If the client has an HTTP/2.0 connection established by previous requests and it knows that the connection supports WebSocket over HTTP/2.0 by the SETTINGS_SUPPORTED_SCHEMES notification, the client SHOULD create a new HTTP/2.0 stream in the existing HTTP/2.0 connection and start the opening handshake on it with an appropriate scheme.
@@ -102,11 +102,11 @@
           If the server does not support ALPN, the client SHOULD establish a TLS connection and start a native WebSocket opening handshake.
           If the server returns "no_application_protocol" alert, the client MUST <spanx style="emph">Fail the WebSocket connection</spanx>.
           If the server selects "HTTP/1.1[wss]" protocol, the client SHOULD establish a TLS connection and start a native WebSocket opening handshake.
-          If the server selects "HTTP/2.0[wss]" protocol, the client SHOULD create an HTTP/2.0 connection, create an HTTP/2.0 stream on it and start the WebSocket opening handshake on the stream with "wss" scheme.
+          If the server selects "HTTP/2.0[wss]" protocol, the client SHOULD create an HTTP/2.0 connection, create an HTTP/2.0 stream on it and start the WebSocket opening handshake on the stream with the "wss" scheme.
         </t>
         <t>
           If the client is going to establish a non-secure WebSocket connection, try the native WebSocket protocol negotiation.
-          If the server advertises WebSocket over HTTP/2.0 in its opening handshake via an Alternate-Protocol header, the client MAY switch its protocol to WebSocket over HTTP/2.0. Otherwise, the client continue to use the native WebSocket protocol.
+          If the server advertises WebSocket over HTTP/2.0 in its opening handshake via an Alternate-Protocol header, the client MAY switch its protocol to WebSocket over HTTP/2.0. Otherwise, the client continues to use the native WebSocket protocol.
           <list style="empty">
             <t>EXAMPLE:
             <vspace blankLines='1'/>
@@ -185,10 +185,10 @@
               “:host”: /host:port/ (e.g. “www.example.com:1234”) as used in the “Client Requirements” section of the WebSocket protocol specification. (See <xref target="RFC6455" />)
             </t>
             <t>
-            “:version”: the WebSocket protocol version of this request. (MUST be “WebSocket/13” or so. The number MUST be matched with the Sec-WebSocket-Version header. See <xref target="RFC6455" />)
+            “:version”: the WebSocket protocol version of this request. MUST be “WebSocket/13”. The number MUST be matched with the Sec-WebSocket-Version header. (See <xref target="RFC6455" />)
             </t>
             <t>
-            “:scheme”: the scheme portion of the URI. (MUST be “ws” or “wss”. See also /secure/ flag in <xref target="RFC6455" />)
+            “:scheme”: the scheme portion of the URI. MUST be “ws” or “wss”. (See also /secure/ flag in <xref target="RFC6455" />)
             </t>
             <t>
             “:origin”: /origin/ as used in the “Client Requirements” section of the WebSocket protocol specification. (See <xref target="RFC6455" />)
