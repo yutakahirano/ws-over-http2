@@ -120,15 +120,15 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 1.1.  Document Organization
 
    WebSocket over HTTP/2.0 is a protocol that layers the WebSocket
-   protocol over HTTP/2.0 stream rather than TCP connection.  This
+   protocol over an HTTP/2.0 stream rather than a TCP connection.  This
    document introduces some abstractions and overrides some definitions
    in [RFC6455].  Definitions in [RFC6455] not overridden by this
    document such as Error Handling or Extensions are still valid.
 
-   Section 3 describes how to choose the protocol to use between the
-   native WebSocket and WebSocket over HTTP/2.0 for each server.  Each
-   of Section 4, Section 5 and Section 6 overrides definitions and rules
-   in its counterpart in [RFC6455].
+   Section 3 describes how to choose the protocol to use between native
+   WebSocket and WebSocket over HTTP/2.0 for each server.  Each of
+   Section 4, Section 5 and Section 6 overrides definitions and rules in
+   its counterpart in [RFC6455].
 
 
 
@@ -227,7 +227,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 3.  Cross Protocol Negotiation
 
-   To establish a WebSocket connection, a client need to decide the
+   To establish a WebSocket connection, a client needs to decide the
    protocol to use by the following steps.
 
    1.  If the client has an HTTP/2.0 connection established by previous
@@ -257,7 +257,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
        connection and start a native WebSocket opening handshake.  If
        the server selects "HTTP/2.0[wss]" protocol, the client SHOULD
        create an HTTP/2.0 connection, create an HTTP/2.0 stream on it
-       and start the WebSocket opening handshake on the stream with
+       and start the WebSocket opening handshake on the stream with the
        "wss" scheme.
 
    3.  If the client is going to establish a non-secure WebSocket
@@ -265,7 +265,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
        the server advertises WebSocket over HTTP/2.0 in its opening
        handshake via an Alternate-Protocol header, the client MAY switch
        its protocol to WebSocket over HTTP/2.0.  Otherwise, the client
-       continue to use the native WebSocket protocol.
+       continues to use the native WebSocket protocol.
 
           EXAMPLE:
 
@@ -415,12 +415,12 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
       "Client Requirements" section of the WebSocket protocol
       specification.  (See [RFC6455])
 
-      ":version": the WebSocket protocol version of this request.  (MUST
+      ":version": the WebSocket protocol version of this request.  MUST
       be "WebSocket/13" or so.  The number MUST be matched with the Sec-
-      WebSocket-Version header.  See [RFC6455])
+      WebSocket-Version header.  (See [RFC6455])
 
-      ":scheme": the scheme portion of the URI.  (MUST be "ws" or "wss".
-      See also /secure/ flag in [RFC6455])
+      ":scheme": the scheme portion of the URI.  MUST be "ws" or "wss".
+      (See also /secure/ flag in [RFC6455])
 
       ":origin": /origin/ as used in the "Client Requirements" section
       of the WebSocket protocol specification.  (See [RFC6455])
