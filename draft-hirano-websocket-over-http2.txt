@@ -3,8 +3,8 @@
 
 HTTPbis Working Group                                          Y. Hirano
 Internet-Draft                                              Google, Inc.
-Intended status: Standards Track                       February 13, 2014
-Expires: August 17, 2014
+Intended status: Standards Track                       February 14, 2014
+Expires: August 18, 2014
 
 
                         WebSocket over HTTP/2.0
@@ -22,7 +22,7 @@ Abstract
    directional multiplexed communication by layering WebSocket on top of
    HTTP/2.0.
 
-   Please send feedback to the httpbis@ietf.org mailing list.
+   Please send feedback to the ietf-http-wg@w3.org mailing list.
 
 Status of this Memo
 
@@ -39,7 +39,7 @@ Status of this Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 17, 2014.
+   This Internet-Draft will expire on August 18, 2014.
 
 Copyright Notice
 
@@ -52,7 +52,7 @@ Copyright Notice
 
 
 
-Hirano                   Expires August 17, 2014                [Page 1]
+Hirano                   Expires August 18, 2014                [Page 1]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -108,7 +108,7 @@ Table of Contents
 
 
 
-Hirano                   Expires August 17, 2014                [Page 2]
+Hirano                   Expires August 18, 2014                [Page 2]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -164,7 +164,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014                [Page 3]
+Hirano                   Expires August 18, 2014                [Page 3]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -220,7 +220,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014                [Page 4]
+Hirano                   Expires August 18, 2014                [Page 4]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -276,7 +276,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014                [Page 5]
+Hirano                   Expires August 18, 2014                [Page 5]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -332,7 +332,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014                [Page 6]
+Hirano                   Expires August 18, 2014                [Page 6]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -388,7 +388,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014                [Page 7]
+Hirano                   Expires August 18, 2014                [Page 7]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -444,7 +444,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014                [Page 8]
+Hirano                   Expires August 18, 2014                [Page 8]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -500,7 +500,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014                [Page 9]
+Hirano                   Expires August 18, 2014                [Page 9]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -556,7 +556,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014               [Page 10]
+Hirano                   Expires August 18, 2014               [Page 10]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -612,7 +612,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014               [Page 11]
+Hirano                   Expires August 18, 2014               [Page 11]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -668,7 +668,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014               [Page 12]
+Hirano                   Expires August 18, 2014               [Page 12]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -724,7 +724,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014               [Page 13]
+Hirano                   Expires August 18, 2014               [Page 13]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -780,7 +780,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014               [Page 14]
+Hirano                   Expires August 18, 2014               [Page 14]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -836,7 +836,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014               [Page 15]
+Hirano                   Expires August 18, 2014               [Page 15]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -892,7 +892,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 17, 2014               [Page 16]
+Hirano                   Expires August 18, 2014               [Page 16]
 
 Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
@@ -948,5 +948,5 @@ Author's Address
 
 
 
-Hirano                   Expires August 17, 2014               [Page 17]
+Hirano                   Expires August 18, 2014               [Page 17]
 
