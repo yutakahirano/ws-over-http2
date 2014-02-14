@@ -115,7 +115,24 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 1.  Introduction
 
-   TBD
+   The WebSocket protocol was standardized to enable efficient
+   bidirectional messaging mainly for browsers.  However, the core spec
+   in RFC 6455 left one problem about scalability unaddressed.  That is
+   that one WebSocket connection uses one TCP connection.  Use of
+   multiple WebSocket connections provides flexibility for web apps,
+   while using more TCP connections leads to more load to the end hosts
+   and also to network intermediaries.
+
+   For the HTTP/1.1, there has been effort to multiplex HTTP traffic
+   into one TCP connection called HTTP/2.0.  The HTTP/2.0 defines a
+   general multiplexed transport on which not only HTTP but other
+   messaging application protocol may be layered onto.  We can address
+   the scalability issue of WebSocket by using HTTP/2.0 framing's
+   multiplexing functionality.
+
+   In this document, we describe how to layer WebSocket semantics onto
+   HTTP/2.0 semantics by defining detailed mapping, replacement of
+   operations and events defined in RFC 6455.
 
 1.1.  Document Organization
 
@@ -129,23 +146,6 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    WebSocket and WebSocket over HTTP/2.0 for each server.  Each of
    Section 4, Section 5 and Section 6 overrides definitions and rules in
    its counterpart in [RFC6455].
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -313,10 +313,29 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
    By default, a client can send HEADERS frames with schemes advertised
    by the selected ALPN protocol.  A server SHOULD send a SETTINGS frame
-   as soon as possible whether it supports other schemes or not.  Here
-   is a proposed ID and value which should be defined in the HTTP/2.0
-   specification.  If the server received a HEADERS with an unsupported
-   scheme, the server MUST send an RST_STREAM frame.
+   as soon as possible whether it supports other schemes or not.
+
+   EXAMPLE: Imagine a client creates an HTTP/2.0 connection to a server
+   which supports both HTTP/2.0 and WebSocket over HTTP/2.0.  Assume
+   that the client advertised "http/2" and the server selected it.  Now
+   the client knows that the client knows that server supports HTTP/2.0
+   with scheme "http" and "https".  The server SHOULD send a SETTINGS
+   frame as soon as possible to let the client know that the server
+   supports "ws" and "wss" schemes as well.  Once the client receives
+   the SETTINGS frame, the client knows it and can use the information
+   on the next WebSocket protocol selection.
+
+   Here is a proposed ID and value which should be defined in the
+   HTTP/2.0 specification.  If the server received a HEADERS with an
+   unsupported scheme, the server MUST send an RST_STREAM frame.
+
+
+
+
+Hirano                   Expires August 18, 2014                [Page 6]
+
+Internet-Draft           WebSocket over HTTP/2.0           February 2014
+
 
    9 - SETTINGS_SUPPORTED_SCHEMES allows the sender to inform the remote
    endpoint the supported protocol schemes.  The corresponding value
@@ -328,26 +347,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
       bit 2: ws
 
-
-
-
-
-Hirano                   Expires August 18, 2014                [Page 6]
-
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
-
-
       bit 3: wss
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -787,7 +787,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 8.  IANA Considerations
 
-   TBD
+
 
 
 

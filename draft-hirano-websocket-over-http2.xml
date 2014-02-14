@@ -38,7 +38,20 @@
   <middle>
     <section title="Introduction">
       <t>
-        TBD
+        The WebSocket protocol was standardized to enable efficient bidirectional messaging mainly for browsers.
+        However, the core spec in RFC 6455 left one problem about scalability unaddressed.
+        That is that one WebSocket connection uses one TCP connection.
+        Use of multiple WebSocket connections provides flexibility for web apps, while using more TCP connections leads to more load to the end hosts and also to network intermediaries.
+      </t>
+
+      <t>
+        For the HTTP/1.1, there has been effort to multiplex HTTP traffic into one TCP connection called HTTP/2.0.
+        The HTTP/2.0 defines a general multiplexed transport on which not only HTTP but other messaging application protocol may be layered onto.
+        We can address the scalability issue of WebSocket by using HTTP/2.0 framing's multiplexing functionality.
+      </t>
+
+      <t>
+        In this document, we describe how to layer WebSocket semantics onto HTTP/2.0 semantics by defining detailed mapping, replacement of operations and events defined in RFC 6455.
       </t>
 
       <section title="Document Organization">
@@ -152,6 +165,15 @@
         <t>
           By default, a client can send HEADERS frames with schemes advertised by the selected ALPN protocol.
           A server SHOULD send a SETTINGS frame as soon as possible whether it supports other schemes or not.
+        </t>
+        <t>
+          EXAMPLE: Imagine a client creates an HTTP/2.0 connection to a server which supports both HTTP/2.0 and WebSocket over HTTP/2.0.
+          Assume that the client advertised "http/2" and the server selected it.
+          Now the client knows that the client knows that server supports HTTP/2.0 with scheme "http" and "https".
+          The server SHOULD send a SETTINGS frame as soon as possible to let the client know that the server supports "ws" and "wss" schemes as well.
+          Once the client receives the SETTINGS frame, the client knows it and can use the information on the next WebSocket protocol selection.
+        </t>
+        <t>
           Here is a proposed ID and value which should be defined in the HTTP/2.0 specification.
           If the server received a HEADERS with an unsupported scheme, the server MUST send an RST_STREAM frame.
         </t>
@@ -408,7 +430,6 @@
       </t>
     </section>
     <section title="IANA Considerations">
-      <t>TBD</t>
     </section>
   </middle>
   <back>
