@@ -319,11 +319,11 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    which supports both HTTP/2.0 and WebSocket over HTTP/2.0.  Assume
    that the client advertised "http/2" and the server selected it.  Now
    the client knows that the client knows that server supports HTTP/2.0
-   with scheme "http" and "https".  The server SHOULD send a SETTINGS
+   with schemes "http" and "https".  The server SHOULD send a SETTINGS
    frame as soon as possible to let the client know that the server
    supports "ws" and "wss" schemes as well.  Once the client receives
-   the SETTINGS frame, the client knows it and can use the information
-   on the next WebSocket protocol selection.
+   the SETTINGS frame, the client can use the information on the next
+   WebSocket protocol selection.
 
    Here is a proposed ID and value which should be defined in the
    HTTP/2.0 specification.  If the server received a HEADERS with an
