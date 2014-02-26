@@ -21,9 +21,9 @@ Same as https://github.com/yutakahirano/ws-over-http2/blob/master/draft-hirano-w
 ##WebSocket message
 There are three kinds of WebSocket message: Text, Binary and Close.
 
-A text message represents a text.
-A binary message represents an arbitrary octet sequence.
-A close message consists of code and reason defined in [the WebSocket API](http://www.w3.org/TR/websockets/).
+A Text message represents a text.
+A Binary message represents an arbitrary octet sequence.
+A Close message consists of code and reason defined in [the WebSocket API](http://www.w3.org/TR/websockets/).
 
 ### Message representation
 A WebSocket message consists of a HEADERS frame and subsequent possibly multiple DATA frames.
@@ -41,32 +41,32 @@ The HEADERS frame MUST include the following headers.
   - 2: Binary
   - 8: Close
 
-The HEADERS frame MAY include other headers.
+An extension MAY insert other headers.
 
 #### Text
-A text WebSocket message represents a text.
+A Text WebSocket message represents a text.
 Without an extension, the utf-8 encoded text is stored in DATA frames in order.
 
-An extension MAY encode the payload arbitrarily.
+An extension MAY modify the payload arbitrarily.
 
 #### Binary
-A binary WebSocket message represents an octet sequence.
-The sequence is stored in DATA frames in order.
+A Binary WebSocket message represents an octet sequence.
+Without an extension, the sequence is stored in DATA frames in order.
 
-An extension MAY encode the payload arbitrarily.
+An extension MAY modify the payload arbitrarily.
 
 #### Close
-A close WebSocket message is used for the WebSocket closing handshake.
+A Close WebSocket message is used for the WebSocket closing handshake.
 
 The HEADERS frame MUST include the following headers.
 
  - :code This header specifies the code in WebSocket closing handshake.
 
-A close WebSocket message MAY have the reason text as the payload data.
+A Close WebSocket message MAY have the reason text as the payload data.
 The reason text MUST be a valid utf-8 text.
 The reason text MUST be of length at most 126 bytes.
 
-END_STREAM flag MUST be set at the last frame of a WebSocket close message.
+END_STREAM flag MUST be set at the last frame of the message.
 
 ## Closing the Connection
 
@@ -81,7 +81,7 @@ To _Start the WebSocket Closing Handshake_ with a status code /code/ and an opti
 Upon either sending or receiving a Close message, it is said that _The WebSocket Closing Handshake is Started_ and that the WebSocket connection is in the CLOSING state.
 An endpoint MUST discard received messages other than close messages when the WebSocket connection is in the CLOSING state.
 
-Note: When an endpoint receives a Close message when it is sending a Text or Binary message, it may send an empty DATA frame with END_SEGMENT set and then send a Close message, because the peer MUST discard the transmitting message.
+Note: When an endpoint receives a Close message during sending a Text or Binary message, it MAY finish the message (i.e. send a DATA frame with no payload and END_MESSAGE set) immediately because the peer MUST discard it. Then the endpoint can send a Close message.
 
 #### The WebSocket Connection is Closed
 When the underlying HTTP/2.0 stream is closed, it is said that _The WebSocket Connection is Closed_ and that the WebSocket connection is in the CLOSED state.
