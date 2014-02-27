@@ -29,8 +29,9 @@ A Close message consists of code and reason defined in [the WebSocket API](http:
 A WebSocket message consists of a HEADERS frame and subsequent possibly multiple DATA frames.
 END_SEGMENT flag MUST be set at the last frame of a WebSocket message.
 That is, WebSocket over HTTP/2.0 defines _segment_ in [HTTP/2.0] as _WebSocket message_.
+END_STREAM flag MUST be set on the last frame of the message and MUST NOT be set on any other frames.
 Note that it is possible to create a message having no payload data.
-In such a case, END_SEGMENT flag of the HEADERS frame MUST be set.
+In such a case, END_SEGMENT flag MUST be set on the HEADERS frame.
 
 The HEADERS frame stores message meta information.
 
@@ -66,7 +67,7 @@ A Close WebSocket message MAY have the reason text as the payload data.
 The reason text MUST be a valid utf-8 text.
 The reason text MUST be of length at most 126 bytes.
 
-END_STREAM flag MUST be set at the last frame of the message.
+END_STREAM flag MUST be set on the last frame of the message.
 
 ## Closing the Connection
 
