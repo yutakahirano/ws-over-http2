@@ -72,7 +72,7 @@ END_STREAM flag MUST be set at the last frame of the message.
 
 ### Definitions
 #### Close the WebSocket Connection
-To _Close the WebSocket Connection_, an endpoint sends a RST_STREAM frame to the peer if it is not yet closed.
+To _Close the WebSocket Connection_, an endpoint sends an RST_STREAM frame to the peer if it is not yet closed.
 
 #### Start the WebSocket Closing Handshake
 To _Start the WebSocket Closing Handshake_ with a status code /code/ and an optional close reason /reason/, an endpoint MUST send a Close message, as described above, whose status code is set to /code/ and whose close reason is set to /reason/.
