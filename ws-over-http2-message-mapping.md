@@ -78,13 +78,14 @@ To _Close the WebSocket Connection_, an endpoint sends a RST_STREAM frame to the
 To _Start the WebSocket Closing Handshake_ with a status code /code/ and an optional close reason /reason/, an endpoint MUST send a Close message, as described above, whose status code is set to /code/ and whose close reason is set to /reason/.
 
 #### The WebSocket Closing Handshake is Started
-Upon either sending or receiving a Close message, it is said that _The WebSocket Closing Handshake is Started_ and that the WebSocket connection is in the CLOSING state.
-An endpoint MUST discard received messages other than close messages when the WebSocket connection is in the CLOSING state.
+Upon either sending or receiving a Close message, it is said that _The WebSocket Closing Handshake is Started_.
+An endpoint MUST discard received Text or Binary messages once the endpoint sent a Close message.
 
-Note: When an endpoint receives a Close message during sending a Text or Binary message, it MAY finish the message (i.e. send a DATA frame with no payload and END_MESSAGE set) immediately because the peer MUST discard it. Then the endpoint can send a Close message.
+Note: When an endpoint receives a Close message during sending a Text or Binary message, it MAY finish the message (i.e. send a DATA frame with no payload and END_SEGMENT set) immediately because the peer MUST discard it.
+Then the endpoint can send a Close message.
 
 #### The WebSocket Connection is Closed
-When the underlying HTTP/2.0 stream is closed, it is said that _The WebSocket Connection is Closed_ and that the WebSocket connection is in the CLOSED state.
-If the stream is was closed after the WebSocket closing handshake was completed, the WebSocket connection is said to have been closed _cleanly_.
+When the underlying HTTP/2.0 stream is closed, it is said that _The WebSocket Connection is Closed_.
+If the stream was closed by a HTTP/2.0 frame with END_STREAM set (i.e. by a WebSocket Close message), the WebSocket connection is said to have been closed _cleanly_.
 
 If the WebSocket connection could not be established, it is also said that _The WebSocket Connection is Closed_, but not _cleanly_.
