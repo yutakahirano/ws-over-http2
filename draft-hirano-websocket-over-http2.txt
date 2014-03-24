@@ -3,11 +3,11 @@
 
 HTTPbis Working Group                                          Y. Hirano
 Internet-Draft                                              Google, Inc.
-Intended status: Standards Track                       February 14, 2014
-Expires: August 18, 2014
+Intended status: Standards Track                           February 2014
+Expires: August 5, 2014
 
 
-                        WebSocket over HTTP/2.0
+                         WebSocket over HTTP/2
               draft-hirano-httpbis-websocket-over-http2-00
 
 Abstract
@@ -17,10 +17,10 @@ Abstract
    that has opted-in to communications from that code.  Since it
    requires one TCP connection for every WebSocket connection, having
    multiple WebSocket connections between the same client and the same
-   server is inefficient.  On the other hand, HTTP/2.0 specifies a fast,
+   server is inefficient.  On the other hand, HTTP/2 specifies a fast,
    secure, multiplexed framing protocol.  This document provides bi-
    directional multiplexed communication by layering WebSocket on top of
-   HTTP/2.0.
+   HTTP/2.
 
    Please send feedback to the ietf-http-wg@w3.org mailing list.
 
@@ -39,7 +39,7 @@ Status of this Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 18, 2014.
+   This Internet-Draft will expire on August 5, 2014.
 
 Copyright Notice
 
@@ -52,9 +52,9 @@ Copyright Notice
 
 
 
-Hirano                   Expires August 18, 2014                [Page 1]
+Hirano                   Expires August 5, 2014                 [Page 1]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
    publication of this document.  Please review these documents
@@ -65,16 +65,68 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    described in the Simplified BSD License.
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hirano                   Expires August 5, 2014                 [Page 2]
+
+Internet-Draft            WebSocket over HTTP/2            February 2014
+
+
 Table of Contents
 
-   1.  Introduction . . . . . . . . . . . . . . . . . . . . . . . . .  3
-     1.1.  Document Organization  . . . . . . . . . . . . . . . . . .  3
-   2.  Conformance Requirements and Terminology . . . . . . . . . . .  4
-   3.  Cross Protocol Negotiation . . . . . . . . . . . . . . . . . .  5
-     3.1.  Supported scheme negotiation using SETTINGS frame  . . . .  6
+   1.  Introduction . . . . . . . . . . . . . . . . . . . . . . . . .  4
+     1.1.  Document Organization  . . . . . . . . . . . . . . . . . .  4
+   2.  Conformance Requirements and Terminology . . . . . . . . . . .  5
+   3.  Cross Protocol Negotiation . . . . . . . . . . . . . . . . . .  6
+     3.1.  Overview . . . . . . . . . . . . . . . . . . . . . . . . .  6
+     3.2.  non-secure connection  . . . . . . . . . . . . . . . . . .  6
+     3.3.  secure connection  . . . . . . . . . . . . . . . . . . . .  6
+     3.4.  the server's preference  . . . . . . . . . . . . . . . . .  6
    4.  Opening Handshake  . . . . . . . . . . . . . . . . . . . . . .  8
      4.1.  Handshake Request  . . . . . . . . . . . . . . . . . . . .  8
      4.2.  Handshake Response . . . . . . . . . . . . . . . . . . . .  8
+       4.2.1.  The Alt-Svc header . . . . . . . . . . . . . . . . . .  9
    5.  Data Framing . . . . . . . . . . . . . . . . . . . . . . . . . 10
      5.1.  Overview . . . . . . . . . . . . . . . . . . . . . . . . . 10
      5.2.  Frame representation . . . . . . . . . . . . . . . . . . . 10
@@ -108,9 +160,13 @@ Table of Contents
 
 
 
-Hirano                   Expires August 18, 2014                [Page 2]
+
+
+
+
+Hirano                   Expires August 5, 2014                 [Page 3]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 1.  Introduction
@@ -124,26 +180,26 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    and also to network intermediaries.
 
    For the HTTP/1.1, there has been effort to multiplex HTTP traffic
-   into one TCP connection called HTTP/2.0.  The HTTP/2.0 defines a
-   general multiplexed transport on which not only HTTP but other
-   messaging application protocol may be layered onto.  We can address
-   the scalability issue of WebSocket by using HTTP/2.0 framing's
-   multiplexing functionality.
+   into one TCP connection called HTTP/2.  The HTTP/2 defines a general
+   multiplexed transport on which not only HTTP but other messaging
+   application protocol may be layered onto.  We can address the
+   scalability issue of WebSocket by using HTTP/2 framing's multiplexing
+   functionality.
 
    In this document, we describe how to layer WebSocket semantics onto
-   HTTP/2.0 semantics by defining detailed mapping, replacement of
+   HTTP/2 semantics by defining detailed mapping, replacement of
    operations and events defined in RFC 6455.
 
 1.1.  Document Organization
 
-   WebSocket over HTTP/2.0 is a protocol that layers the WebSocket
-   protocol over an HTTP/2.0 stream rather than a TCP connection.  This
+   WebSocket over HTTP/2 is a protocol that layers the WebSocket
+   protocol over an HTTP/2 stream rather than a TCP connection.  This
    document introduces some abstractions and overrides some definitions
    in [RFC6455].  Definitions in [RFC6455] not overridden by this
    document such as Error Handling or Extensions are still valid.
 
    Section 3 describes how to choose the protocol to use between native
-   WebSocket and WebSocket over HTTP/2.0 for each server.  Each of
+   WebSocket and WebSocket over HTTP/2 for each server.  Each of
    Section 4, Section 5 and Section 6 overrides definitions and rules in
    its counterpart in [RFC6455].
 
@@ -164,9 +220,9 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 18, 2014                [Page 3]
+Hirano                   Expires August 5, 2014                 [Page 4]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 2.  Conformance Requirements and Terminology
@@ -188,10 +244,10 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
    Native WebSocket means the WebSocket specified in [RFC6455].
 
-   "Frame" has two meanings, WebSocket frame and HTTP/2.0 frame.  When
-   it is obvious "WebSocket" and "HTTP/2.0" can be omitted.  For
-   example, "DATA frame" means "HTTP/2.0 DATA frame" and "Close frame"
-   means "WebSocket Close frame".
+   "Frame" has two meanings, WebSocket frame and HTTP/2 frame.  When it
+   is obvious "WebSocket" and "HTTP/2" can be omitted.  For example,
+   "DATA frame" means "HTTP/2 DATA frame" and "Close frame" means
+   "WebSocket Close frame".
 
 
 
@@ -220,177 +276,121 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 18, 2014                [Page 4]
+Hirano                   Expires August 5, 2014                 [Page 5]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 3.  Cross Protocol Negotiation
 
+3.1.  Overview
+
+   _This section is non-normative._.
+
    To establish a WebSocket connection, a client needs to decide the
-   protocol to use by the following steps.
+   protocol to use.  Roughly speaking, if a client knows the server's
+   preference the client will connect to the server with the protocol.
+   Otherwise, a client tries to connect to the server with the native
+   WebSocket.
 
-   1.  If the client has an HTTP/2.0 connection established by previous
-       requests and it knows that the connection supports WebSocket over
-       HTTP/2.0 by the SETTINGS_SUPPORTED_SCHEMES notification, the
-       client SHOULD create a new HTTP/2.0 stream in the existing
-       HTTP/2.0 connection and start the opening handshake on it with an
-       appropriate scheme.  Both of WebSocket (ws) and secure WebSocket
-       (wss) could share the same HTTP/2.0 connection.
+3.2.  non-secure connection
 
-   2.  If the client is going to establish a secure WebSocket
-       connection, create a WebSocket connection over TLS with
-       Application Layer Protocol Negotiation (ALPN) [ALPN draft].  The
-       client SHOULD send one or two of the following application
-       protocols as ProtocolNameList as specified in [ALPN draft] in any
-       order.
+   If the client knows that the server prefers WebSocket over HTTP/2
+   more than the native WebSocket, the client SHOULD connect to the
+   server with WebSocket over HTTP/2.  Otherwise, the client SHOULD
+   connect to the server with the native WebSocket.
 
-       *  "HTTP/1.1[wss]" for the native WebSocket over TLS
+3.3.  secure connection
 
-       *  "HTTP/2.0[wss]" for secure WebSocket over HTTP/2.0.
+   If the client knows that the server prefers WebSocket over HTTP/2
+   more than the native WebSocket and there is an existing HTTP/2
+   connection, the client create an HTTP/2 stream on the HTTP/2
+   connection.
 
-       If the server does not support ALPN, the client SHOULD establish
-       a TLS connection and start a native WebSocket opening handshake.
-       If the server returns "no_application_protocol" alert, the client
-       MUST _Fail the WebSocket connection_.  If the server selects
-       "HTTP/1.1[wss]" protocol, the client SHOULD establish a TLS
-       connection and start a native WebSocket opening handshake.  If
-       the server selects "HTTP/2.0[wss]" protocol, the client SHOULD
-       create an HTTP/2.0 connection, create an HTTP/2.0 stream on it
-       and start the WebSocket opening handshake on the stream with the
-       "wss" scheme.
+   Otherwise, a client set up a TLS connection.  The client SHOULD send
+   one or two of the following application protocols as ProtocolNameList
+   as specified in [ALPN draft] in any order.
 
-   3.  If the client is going to establish a non-secure WebSocket
-       connection, try the native WebSocket protocol negotiation.  If
-       the server advertises WebSocket over HTTP/2.0 in its opening
-       handshake via an Alternate-Protocol header, the client MAY switch
-       its protocol to WebSocket over HTTP/2.0.  Otherwise, the client
-       continues to use the native WebSocket protocol.
+   o  "http/1.1" for the native WebSocket over TLS
 
-          EXAMPLE:
+   o  "h2ws" for secure WebSocket over HTTP/2.
 
+   If the server selects the "h2ws" protocol, the client SHOULD connect
+   to the server with WebSocket over HTTP/2 on the TLS connection.  If
+   the server selects the "http/1.1" protocol or the server does not
+   support ALPN, the client SHOULD connect to the server with the native
+   WebSocket on the TLS connection.  If the server returns
+   "no_application_protocol" alert, the client MUST _Fail the WebSocket
+   connection_.
 
+3.4.  the server's preference
 
+   The client SHOULD keep track of the [ALT-SVC draft] information
+   provided by the server and use it as the server's preference.
+
+   Note that though a client use the ALPN protocol when it sets up a TLS
 
 
 
-
-
-Hirano                   Expires August 18, 2014                [Page 5]
+Hirano                   Expires August 5, 2014                 [Page 6]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
-            GET /chat HTTP/1.1
-            Host: server.example.com
-            Upgrade: websocket
-            Connection: Upgrade
-            Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
-            Sec-WebSocket-Protocol: chat, superchat
-            Sec-WebSocket-Version: 13
-            Origin: http://example.com
-
-          Then, the server responds as follows:
-
-            HTTP/1.1 101 Switching Protocols
-            Upgrade: websocket
-            Connection: Upgrade
-            Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
-            Sec-WebSocket-Protocol: chat
-            Alternate-Protocol: 443:http/2[http,ws]
-
-       If the client wants to switch its protocol, the client SHOULD
-       send a Close frame with code 1006 and reason like "Switching
-       Protocols: 443:http/2;websocket" after the opening handshake,
-       then close the WebSocket connection as soon as possible.  These
-       transactions MUST be hidden and MUST NOT be notified to upper
-       layers like the JavaScript event queue.  Then, the client SHOULD
-       reconnect to the advertised server via HTTP/2.0.
-
-3.1.  Supported scheme negotiation using SETTINGS frame
-
-   _THIS SECTION SHOULD BE INTRODUCED IN THE HTTP/2.0 SPEC_.
-
-   By default, a client can send HEADERS frames with schemes advertised
-   by the selected ALPN protocol.  A server SHOULD send a SETTINGS frame
-   as soon as possible whether it supports other schemes or not.
-
-   EXAMPLE: Imagine a client creates an HTTP/2.0 connection to a server
-   which supports both HTTP/2.0 and WebSocket over HTTP/2.0.  Assume
-   that the client advertised "http/2" and the server selected it.  Now
-   the client knows that the client knows that server supports HTTP/2.0
-   with schemes "http" and "https".  The server SHOULD send a SETTINGS
-   frame as soon as possible to let the client know that the server
-   supports "ws" and "wss" schemes as well.  Once the client receives
-   the SETTINGS frame, the client can use the information on the next
-   WebSocket protocol selection.
-
-   Here is a proposed ID and value which should be defined in the
-   HTTP/2.0 specification.  If the server received a HEADERS with an
-   unsupported scheme, the server MUST send an RST_STREAM frame.
+   connection, it SHOULD not use the information after that.
 
 
 
 
-Hirano                   Expires August 18, 2014                [Page 6]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hirano                   Expires August 5, 2014                 [Page 7]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
-
-
-   9 - SETTINGS_SUPPORTED_SCHEMES allows the sender to inform the remote
-   endpoint the supported protocol schemes.  The corresponding value
-   must be a 32-bit value, and which contains flags as follows:
-
-      bit 0: http
-
-      bit 1: https
-
-      bit 2: ws
-
-      bit 3: wss
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                   Expires August 18, 2014                [Page 7]
-
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 4.  Opening Handshake
@@ -444,9 +444,9 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 18, 2014                [Page 8]
+Hirano                   Expires August 5, 2014                 [Page 8]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
    has not completed and that the semantics of HTTP still apply.  The
@@ -470,6 +470,20 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    All header names MUST be lowercase.  The successful server response
    MUST have ":status" containing "101".
 
+4.2.1.  The Alt-Svc header
+
+   When the Alt-Svc header field is contained in the handshake response,
+   the client SHOULD reconnect to the server with the advertised service
+   if possible.  Note that the Alt-Svc header field takes effect even
+   for the handshake response whose status code is not 101.
+
+   If the client receives an opening handshake response having the Alt-
+   Svc header field and the client is able to work with the advertised
+   service, the client SHOULD send a Close frame with code 1006 and
+   reason like "Alternate Service: h2ws" and then close the WebSocket
+   connection as soon as possible.  These transactions MUST be hidden
+   and MUST NOT be notified to upper layers like the JavaScript event
+   queue.  Then, the client SHOULD reconnect to the server.
 
 
 
@@ -486,23 +500,9 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                   Expires August 18, 2014                [Page 9]
+Hirano                   Expires August 5, 2014                 [Page 9]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 5.  Data Framing
@@ -524,15 +524,15 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 5.2.  Frame representation
 
    Several representations are proposed.  In each representation, an
-   endpoint MUST set END_STREAM flag at the last HTTP/2.0 frame it sends
+   endpoint MUST set END_STREAM flag at the last HTTP/2 frame it sends
    on the WebSocket connection.
 
 5.2.1.  Tunneling RFC6455 framing (Plan D)
 
    The WebSocket frame byte representation is embedded in payload in
-   HTTP/2.0 DATA frame.  DATA frames can be re-framed, i.e.  One
-   WebSocket frame can be split over multiple DATA frames and one DATA
-   frames can contain multiple WebSocket frames.
+   HTTP/2 DATA frame.  DATA frames can be re-framed, i.e.  One WebSocket
+   frame can be split over multiple DATA frames and one DATA frames can
+   contain multiple WebSocket frames.
 
 5.2.2.  Tunneling RFC6455 framing with END_SEGMENT mark (Plan A)
 
@@ -540,15 +540,15 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    DATA frame to make intermediaries enable to flush data appropriately
    without understanding the embedded WebSocket framing.
 
-   An endpoint MUST set END_SEGMENT on an HTTP/2.0 DATA frame containing
+   An endpoint MUST set END_SEGMENT on an HTTP/2 DATA frame containing
    the end of a WebSocket frame with FIN flag set.
 
 5.2.3.  HEADERS + DATAs (Plan C)
 
-   In this plan, an HTTP/2.0 HEADERS frame and subsequent multiple DATA
+   In this plan, an HTTP/2 HEADERS frame and subsequent multiple DATA
    frames represent a WebSocket frame.  END_SEGMENT flag MUST be set at
-   the last HTTP/2.0 DATA frame for each WebSocket frame.  That is,
-   WebSocket over HTTP/2.0 defines _segment_ in [HTTP/2.0 draft] as
+   the last HTTP/2 DATA frame for each WebSocket frame.  That is,
+   WebSocket over HTTP/2 defines _segment_ in [HTTP/2 draft] as
    _WebSocket frame_.  The WebSocket frame headers are stored in the
    HEADERS frame in the following manner.
 
@@ -556,9 +556,9 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 18, 2014               [Page 10]
+Hirano                   Expires August 5, 2014                [Page 10]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
    o  The ":fin" header field
@@ -596,7 +596,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 5.3.  Masking
 
    [RFC6455] defines the masking mechanism which masks WebSocket frame
-   data payload with a random masking-key.  On WebSocket over HTTP/2.0,
+   data payload with a random masking-key.  On WebSocket over HTTP/2,
    masking mechanism MUST be disabled.
 
 
@@ -612,9 +612,9 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 18, 2014               [Page 11]
+Hirano                   Expires August 5, 2014                [Page 11]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 6.  Closing the Connection
@@ -626,7 +626,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 6.1.1.  Close the WebSocket Connection
 
    To _Close the WebSocket Connection_, an endpoint closes the
-   underlying HTTP/2.0 stream.  If the stream is already closed, the
+   underlying HTTP/2 stream.  If the stream is already closed, the
    endpoint MUST do nothing.  Otherwise, the endpoint MUST send an
    RST_STREAM frame with an appropriate error code.
 
@@ -636,7 +636,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    (Section 6.4) /code/ and an optional close reason (Section 6.1.6)
    /reason/, an endpoint MUST send a Close control frame, as described
    in [RFC6455] whose status code is set to /code/ and whose close
-   reason is set to /reason/.  The last HTTP/2.0 frame of the WebSocket
+   reason is set to /reason/.  The last HTTP/2 frame of the WebSocket
    Close control frame MUST turn END_STREAM flag on.
 
 6.1.3.  The WebSocket Closing Handshake is Started
@@ -668,9 +668,9 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 18, 2014               [Page 12]
+Hirano                   Expires August 5, 2014                [Page 12]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 6.1.7.  Fail the WebSocket Connection
@@ -681,7 +681,7 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 6.2.1.  Client-Initiated Closure
 
-   If at any point the underlying HTTP/2.0 stream is unexpectedly
+   If at any point the underlying HTTP/2 stream is unexpectedly
    terminated, the client MUST _Fail the WebSocket Connection_.
 
    Except as indicated above or as specified by the application layer
@@ -724,9 +724,9 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 18, 2014               [Page 13]
+Hirano                   Expires August 5, 2014                [Page 13]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 7.  Security Considerations
@@ -737,8 +737,8 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
    o  To prevent TLS side-channel attacks such as [BEAST].
 
-   These should be addressed at the HTTP/2.0 framing layer and WebSocket
-   over HTTP/2.0 has no masking mechanism.
+   These should be addressed at the HTTP/2 framing layer and WebSocket
+   over HTTP/2 has no masking mechanism.
 
 
 
@@ -780,9 +780,9 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 18, 2014               [Page 14]
+Hirano                   Expires August 5, 2014                [Page 14]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 8.  IANA Considerations
@@ -836,9 +836,9 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-Hirano                   Expires August 18, 2014               [Page 15]
+Hirano                   Expires August 5, 2014                [Page 15]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 9.  References
@@ -851,14 +851,18 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119, March 1997.
 
-   [HTTP/2.0 draft]
+   [HTTP/2 draft]
               Belshe, M., Peon, R., Thomson, M., and A. Melnikov,
-              "Hypertext Transfer Protocol version 2.0", September 2012.
+              "Hypertext Transfer Protocol version 2", February 2014.
 
    [ALPN draft]
               Friedl, S., Popov, A., Langley, A., and E. Stephan,
               "Transport Layer Security (TLS) Application Layer Protocol
               Negotiation Extension", January 2014.
+
+   [ALT-SVC draft]
+              Nottingham, M. and P. McManus, "HTTP Alternative
+              Services", March 2014.
 
 9.2.  Informative References
 
@@ -888,13 +892,9 @@ Internet-Draft           WebSocket over HTTP/2.0           February 2014
 
 
 
-
-
-
-
-Hirano                   Expires August 18, 2014               [Page 16]
+Hirano                   Expires August 5, 2014                [Page 16]
 
-Internet-Draft           WebSocket over HTTP/2.0           February 2014
+Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 Author's Address
@@ -948,5 +948,5 @@ Author's Address
 
 
 
-Hirano                   Expires August 18, 2014               [Page 17]
+Hirano                   Expires August 5, 2014                [Page 17]
 

@@ -90,102 +90,46 @@
         When it is obvious "WebSocket" and "HTTP/2" can be omitted.
         For example, "DATA frame" means "HTTP/2 DATA frame" and "Close frame" means "WebSocket Close frame".
       </t>
-
     </section>
 
     <section title="Cross Protocol Negotiation" anchor="protocol_negotiation">
-      <t>
-      To establish a WebSocket connection, a client needs to decide the protocol to use by the following steps.
-      <list style="numbers">
+      <section title="Overview">
+        <t><spanx style="emph">This section is non-normative.</spanx>.</t>
         <t>
-          If the client has an HTTP/2 connection established by previous requests and it knows that the connection supports WebSocket over HTTP/2 by the SETTINGS_SUPPORTED_SCHEMES notification, the client SHOULD create a new HTTP/2 stream in the existing HTTP/2 connection and start the opening handshake on it with an appropriate scheme.
-          Both of WebSocket (ws) and secure WebSocket (wss) could share the same HTTP/2 connection.
+          To establish a WebSocket connection, a client needs to decide the protocol to use.
+          Roughly speaking, if a client knows the server's preference the client will connect to the server with the protocol.
+          Otherwise, a client tries to connect to the server with the native WebSocket.
+        </t>
+      </section>
+
+      <section title="non-secure connection">
+        <t>
+          If the client knows that the server prefers WebSocket over HTTP/2 more than the native WebSocket, the client SHOULD connect to the server with WebSocket over HTTP/2. Otherwise, the client SHOULD connect to the server with the native WebSocket.
+        </t>
+      </section>
+
+      <section title="secure connection">
+        <t>
+          If the client knows that the server prefers WebSocket over HTTP/2 more than the native WebSocket and there is an existing HTTP/2 connection, the client create an HTTP/2 stream on the HTTP/2 connection.
         </t>
         <t>
-          If the client is going to establish a secure WebSocket connection, create a WebSocket connection over TLS with Application Layer Protocol Negotiation (ALPN) <xref target="ALPN draft" />.
+          Otherwise, a client set up a TLS connection.
           The client SHOULD send one or two of the following application protocols as ProtocolNameList as specified in <xref target="ALPN draft" /> in any order.
           <list style="symbols">
-            <t>
-              "HTTP/1.1[wss]" for the native WebSocket over TLS
-            </t>
-            <t>
-              "HTTP/2[wss]" for secure WebSocket over HTTP/2.
-            </t>
+            <t>"http/1.1" for the native WebSocket over TLS</t>
+            <t>"h2ws" for secure WebSocket over HTTP/2.</t>
           </list>
-          If the server does not support ALPN, the client SHOULD establish a TLS connection and start a native WebSocket opening handshake.
+          If the server selects the "h2ws" protocol, the client SHOULD connect to the server with WebSocket over HTTP/2 on the TLS connection.
+          If the server selects the "http/1.1" protocol or the server does not support ALPN, the client SHOULD connect to the server with the native WebSocket on the TLS connection.
           If the server returns "no_application_protocol" alert, the client MUST <spanx style="emph">Fail the WebSocket connection</spanx>.
-          If the server selects "HTTP/1.1[wss]" protocol, the client SHOULD establish a TLS connection and start a native WebSocket opening handshake.
-          If the server selects "HTTP/2[wss]" protocol, the client SHOULD create an HTTP/2 connection, create an HTTP/2 stream on it and start the WebSocket opening handshake on the stream with the "wss" scheme.
+        </t>
+      </section>
+      <section title="the server's preference">
+        <t>
+          The client SHOULD keep track of the <xref target="ALT-SVC draft" /> information provided by the server and use it as the server's preference.
         </t>
         <t>
-          If the client is going to establish a non-secure WebSocket connection, try the native WebSocket protocol negotiation.
-          If the server advertises WebSocket over HTTP/2 in its opening handshake via an Alternate-Protocol header, the client MAY switch its protocol to WebSocket over HTTP/2. Otherwise, the client continues to use the native WebSocket protocol.
-          <list style="empty">
-            <t>EXAMPLE:
-            <vspace blankLines='1'/>
-            <figure>
-              <artwork>
-         GET /chat HTTP/1.1
-         Host: server.example.com
-         Upgrade: websocket
-         Connection: Upgrade
-         Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
-         Sec-WebSocket-Protocol: chat, superchat
-         Sec-WebSocket-Version: 13
-         Origin: http://example.com
-              </artwork>
-            </figure>
-            </t>
-            <t>
-              Then, the server responds as follows:
-              <vspace blankLines='0'/>
-              <figure>
-                <artwork>
-         HTTP/1.1 101 Switching Protocols
-         Upgrade: websocket
-         Connection: Upgrade
-         Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
-         Sec-WebSocket-Protocol: chat
-         Alternate-Protocol: 443:http/2[http,ws]
-                </artwork>
-              </figure>
-            </t>
-          </list>
-            If the client wants to switch its protocol, the client SHOULD send a Close frame with code 1006 and reason like “Switching Protocols: 443:http/2;websocket” after the opening handshake, then close the WebSocket connection as soon as possible.
-            These transactions MUST be hidden and MUST NOT be notified to upper layers like the JavaScript event queue.
-            Then, the client SHOULD reconnect to the advertised server via HTTP/2.
-        </t>
-      </list>
-      </t>
-
-      <section title="Supported scheme negotiation using SETTINGS frame">
-        <t>
-          <spanx style="emph">THIS SECTION SHOULD BE INTRODUCED IN THE HTTP/2 SPEC</spanx>.
-        </t>
-        <t>
-          By default, a client can send HEADERS frames with schemes advertised by the selected ALPN protocol.
-          A server SHOULD send a SETTINGS frame as soon as possible whether it supports other schemes or not.
-        </t>
-        <t>
-          EXAMPLE: Imagine a client creates an HTTP/2 connection to a server which supports both HTTP/2 and WebSocket over HTTP/2.
-          Assume that the client advertised "http/2" and the server selected it.
-          Now the client knows that the client knows that server supports HTTP/2 with schemes "http" and "https".
-          The server SHOULD send a SETTINGS frame as soon as possible to let the client know that the server supports "ws" and "wss" schemes as well.
-          Once the client receives the SETTINGS frame, the client can use the information on the next WebSocket protocol selection.
-        </t>
-        <t>
-          Here is a proposed ID and value which should be defined in the HTTP/2 specification.
-          If the server received a HEADERS with an unsupported scheme, the server MUST send an RST_STREAM frame.
-        </t>
-        <t>
-          9 - SETTINGS_SUPPORTED_SCHEMES allows the sender to inform the remote endpoint the supported protocol schemes.
-          The corresponding value must be a 32-bit value, and which contains flags as follows:
-          <list style = "empty">
-            <t>bit 0: http</t>
-            <t>bit 1: https</t>
-            <t>bit 2: ws</t>
-            <t>bit 3: wss</t>
-          </list>
+          Note that though a client use the ALPN protocol when it sets up a TLS connection, it SHOULD not use the information after that.
         </t>
       </section>
     </section>
@@ -249,6 +193,18 @@
           Also, other HTTP compatible header name/value pairs MAY be present.
           All header names MUST be lowercase. The successful server response MUST have “:status” containing “101”.
         </t>
+
+        <section title="The Alt-Svc header">
+          <t>
+            When the Alt-Svc header field is contained in the handshake response, the client SHOULD use the advertised service if possible.
+            Note that the Alt-Svc header field takes effect even for the handshake response whose status code is not 101.
+          </t>
+          <t>
+            If the client receives an opening handshake response having the Alt-Svc header field and the client is able to work with the advertised service, the client SHOULD send a Close frame with code 1006 and reason like "Alternate Service: h2ws" and then close the WebSocket connection as soon as possible.
+            These transactions MUST be hidden and MUST NOT be notified to upper layers like the JavaScript event queue.
+            Then, the client SHOULD connect to the advertised server with the advertised protocol.
+          </t>
+        </section>
       </section>
     </section>
     <section title="Data Framing" anchor="framing">
@@ -438,24 +394,32 @@
       <?rfc include="reference.RFC.2119" ?>
       <reference anchor="HTTP/2 draft">
       <front>
-      <title>Hypertext Transfer Protocol version 2.0</title>
-      <author initials="M." surname="Belshe" fullname="Mike Belshe"></author>
-      <author initials="R." surname="Peon" fullname="Roberto Peon"></author>
-      <author initials="M." surname="Thomson" fullname="Martin Thomson"></author>
-      <author initials="A." surname="Melnikov" fullname="Alexey Melnikov"></author>
-      <date month="September" year="2012" />
-    </front>
-    </reference>
+        <title>Hypertext Transfer Protocol version 2</title>
+        <author initials="M." surname="Belshe" fullname="Mike Belshe"></author>
+        <author initials="R." surname="Peon" fullname="Roberto Peon"></author>
+        <author initials="M." surname="Thomson" fullname="Martin Thomson"></author>
+        <author initials="A." surname="Melnikov" fullname="Alexey Melnikov"></author>
+        <date month="February" year="2014" />
+      </front>
+      </reference>
       <reference anchor="ALPN draft">
-      <front>
-      <title>Transport Layer Security (TLS) Application Layer Protocol Negotiation Extension</title>
-      <author initials="S." surname="Friedl" fullname="Stephan Friedl"></author>
-      <author initials="A." surname="Popov" fullname="Andrei Popov"></author>
-      <author initials="A." surname="Langley" fullname="Adam Langley"></author>
-      <author initials="E." surname="Stephan" fullname="Emile Stephan"></author>
-      <date month="January" year="2014" />
-    </front>
-    </reference>
+        <front>
+          <title>Transport Layer Security (TLS) Application Layer Protocol Negotiation Extension</title>
+          <author initials="S." surname="Friedl" fullname="Stephan Friedl"></author>
+          <author initials="A." surname="Popov" fullname="Andrei Popov"></author>
+          <author initials="A." surname="Langley" fullname="Adam Langley"></author>
+          <author initials="E." surname="Stephan" fullname="Emile Stephan"></author>
+          <date month="January" year="2014" />
+        </front>
+      </reference>
+      <reference anchor="ALT-SVC draft">
+        <front>
+          <title>HTTP Alternative Services</title>
+          <author initials="M." surname="Nottingham" fullname="Mark Nottingham"></author>
+          <author initials="P." surname="McManus" fullname="Patrick McManus"></author>
+          <date month="March" year="2014" />
+        </front>
+      </reference>
     </references>
     <references title="Informative References">
       <reference anchor="BEAST">
