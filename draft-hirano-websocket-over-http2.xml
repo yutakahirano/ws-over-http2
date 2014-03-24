@@ -8,7 +8,7 @@
    docName="draft-hirano-httpbis-websocket-over-http2-00"
    ipr="trust200902">
   <front>
-    <title>WebSocket over HTTP/2.0</title>
+    <title>WebSocket over HTTP/2</title>
     <author
        initials="Y.H."
        surname="Hirano"
@@ -25,8 +25,8 @@
       <t>
         The WebSocket protocol enables two-way communication between a client running untrusted code in a controlled environment to a remote host that has opted-in to communications from that code.
         Since it requires one TCP connection for every WebSocket connection, having multiple WebSocket connections between the same client and the same server is inefficient.
-        On the other hand, HTTP/2.0 specifies a fast, secure, multiplexed framing protocol.
-        This document provides bi-directional multiplexed communication by layering WebSocket on top of HTTP/2.0.
+        On the other hand, HTTP/2 specifies a fast, secure, multiplexed framing protocol.
+        This document provides bi-directional multiplexed communication by layering WebSocket on top of HTTP/2.
       </t>
 
       <t>
@@ -45,23 +45,23 @@
       </t>
 
       <t>
-        For the HTTP/1.1, there has been effort to multiplex HTTP traffic into one TCP connection called HTTP/2.0.
-        The HTTP/2.0 defines a general multiplexed transport on which not only HTTP but other messaging application protocol may be layered onto.
-        We can address the scalability issue of WebSocket by using HTTP/2.0 framing's multiplexing functionality.
+        For the HTTP/1.1, there has been effort to multiplex HTTP traffic into one TCP connection called HTTP/2.
+        The HTTP/2 defines a general multiplexed transport on which not only HTTP but other messaging application protocol may be layered onto.
+        We can address the scalability issue of WebSocket by using HTTP/2 framing's multiplexing functionality.
       </t>
 
       <t>
-        In this document, we describe how to layer WebSocket semantics onto HTTP/2.0 semantics by defining detailed mapping, replacement of operations and events defined in RFC 6455.
+        In this document, we describe how to layer WebSocket semantics onto HTTP/2 semantics by defining detailed mapping, replacement of operations and events defined in RFC 6455.
       </t>
 
       <section title="Document Organization">
         <t>
-          WebSocket over HTTP/2.0 is a protocol that layers the WebSocket protocol over an HTTP/2.0 stream rather than a TCP connection.
+          WebSocket over HTTP/2 is a protocol that layers the WebSocket protocol over an HTTP/2 stream rather than a TCP connection.
           This document introduces some abstractions and overrides some definitions in <xref target="RFC6455"/>.
           Definitions in <xref target="RFC6455"/> not overridden by this document such as Error Handling or Extensions are still valid.
         </t>
         <t>
-          <xref target="protocol_negotiation"/> describes how to choose the protocol to use between native WebSocket and WebSocket over HTTP/2.0 for each server.
+          <xref target="protocol_negotiation"/> describes how to choose the protocol to use between native WebSocket and WebSocket over HTTP/2 for each server.
           Each of <xref target="opening_handshake"/>, <xref target="framing"/> and <xref target="closing_connection"/> overrides definitions and rules in its counterpart in <xref target="RFC6455"/>.
         </t>
       </section>
@@ -86,9 +86,9 @@
       </t>
 
       <t>
-        "Frame" has two meanings, WebSocket frame and HTTP/2.0 frame.
-        When it is obvious "WebSocket" and "HTTP/2.0" can be omitted.
-        For example, "DATA frame" means "HTTP/2.0 DATA frame" and "Close frame" means "WebSocket Close frame".
+        "Frame" has two meanings, WebSocket frame and HTTP/2 frame.
+        When it is obvious "WebSocket" and "HTTP/2" can be omitted.
+        For example, "DATA frame" means "HTTP/2 DATA frame" and "Close frame" means "WebSocket Close frame".
       </t>
 
     </section>
@@ -98,8 +98,8 @@
       To establish a WebSocket connection, a client needs to decide the protocol to use by the following steps.
       <list style="numbers">
         <t>
-          If the client has an HTTP/2.0 connection established by previous requests and it knows that the connection supports WebSocket over HTTP/2.0 by the SETTINGS_SUPPORTED_SCHEMES notification, the client SHOULD create a new HTTP/2.0 stream in the existing HTTP/2.0 connection and start the opening handshake on it with an appropriate scheme.
-          Both of WebSocket (ws) and secure WebSocket (wss) could share the same HTTP/2.0 connection.
+          If the client has an HTTP/2 connection established by previous requests and it knows that the connection supports WebSocket over HTTP/2 by the SETTINGS_SUPPORTED_SCHEMES notification, the client SHOULD create a new HTTP/2 stream in the existing HTTP/2 connection and start the opening handshake on it with an appropriate scheme.
+          Both of WebSocket (ws) and secure WebSocket (wss) could share the same HTTP/2 connection.
         </t>
         <t>
           If the client is going to establish a secure WebSocket connection, create a WebSocket connection over TLS with Application Layer Protocol Negotiation (ALPN) <xref target="ALPN draft" />.
@@ -109,17 +109,17 @@
               "HTTP/1.1[wss]" for the native WebSocket over TLS
             </t>
             <t>
-              "HTTP/2.0[wss]" for secure WebSocket over HTTP/2.0.
+              "HTTP/2[wss]" for secure WebSocket over HTTP/2.
             </t>
           </list>
           If the server does not support ALPN, the client SHOULD establish a TLS connection and start a native WebSocket opening handshake.
           If the server returns "no_application_protocol" alert, the client MUST <spanx style="emph">Fail the WebSocket connection</spanx>.
           If the server selects "HTTP/1.1[wss]" protocol, the client SHOULD establish a TLS connection and start a native WebSocket opening handshake.
-          If the server selects "HTTP/2.0[wss]" protocol, the client SHOULD create an HTTP/2.0 connection, create an HTTP/2.0 stream on it and start the WebSocket opening handshake on the stream with the "wss" scheme.
+          If the server selects "HTTP/2[wss]" protocol, the client SHOULD create an HTTP/2 connection, create an HTTP/2 stream on it and start the WebSocket opening handshake on the stream with the "wss" scheme.
         </t>
         <t>
           If the client is going to establish a non-secure WebSocket connection, try the native WebSocket protocol negotiation.
-          If the server advertises WebSocket over HTTP/2.0 in its opening handshake via an Alternate-Protocol header, the client MAY switch its protocol to WebSocket over HTTP/2.0. Otherwise, the client continues to use the native WebSocket protocol.
+          If the server advertises WebSocket over HTTP/2 in its opening handshake via an Alternate-Protocol header, the client MAY switch its protocol to WebSocket over HTTP/2. Otherwise, the client continues to use the native WebSocket protocol.
           <list style="empty">
             <t>EXAMPLE:
             <vspace blankLines='1'/>
@@ -153,28 +153,28 @@
           </list>
             If the client wants to switch its protocol, the client SHOULD send a Close frame with code 1006 and reason like “Switching Protocols: 443:http/2;websocket” after the opening handshake, then close the WebSocket connection as soon as possible.
             These transactions MUST be hidden and MUST NOT be notified to upper layers like the JavaScript event queue.
-            Then, the client SHOULD reconnect to the advertised server via HTTP/2.0.
+            Then, the client SHOULD reconnect to the advertised server via HTTP/2.
         </t>
       </list>
       </t>
 
       <section title="Supported scheme negotiation using SETTINGS frame">
         <t>
-          <spanx style="emph">THIS SECTION SHOULD BE INTRODUCED IN THE HTTP/2.0 SPEC</spanx>.
+          <spanx style="emph">THIS SECTION SHOULD BE INTRODUCED IN THE HTTP/2 SPEC</spanx>.
         </t>
         <t>
           By default, a client can send HEADERS frames with schemes advertised by the selected ALPN protocol.
           A server SHOULD send a SETTINGS frame as soon as possible whether it supports other schemes or not.
         </t>
         <t>
-          EXAMPLE: Imagine a client creates an HTTP/2.0 connection to a server which supports both HTTP/2.0 and WebSocket over HTTP/2.0.
+          EXAMPLE: Imagine a client creates an HTTP/2 connection to a server which supports both HTTP/2 and WebSocket over HTTP/2.
           Assume that the client advertised "http/2" and the server selected it.
-          Now the client knows that the client knows that server supports HTTP/2.0 with schemes "http" and "https".
+          Now the client knows that the client knows that server supports HTTP/2 with schemes "http" and "https".
           The server SHOULD send a SETTINGS frame as soon as possible to let the client know that the server supports "ws" and "wss" schemes as well.
           Once the client receives the SETTINGS frame, the client can use the information on the next WebSocket protocol selection.
         </t>
         <t>
-          Here is a proposed ID and value which should be defined in the HTTP/2.0 specification.
+          Here is a proposed ID and value which should be defined in the HTTP/2 specification.
           If the server received a HEADERS with an unsupported scheme, the server MUST send an RST_STREAM frame.
         </t>
         <t>
@@ -271,11 +271,11 @@
       <section title="Frame representation">
         <t>
           Several representations are proposed.
-          In each representation, an endpoint MUST set END_STREAM flag at the last HTTP/2.0 frame it sends on the WebSocket connection.
+          In each representation, an endpoint MUST set END_STREAM flag at the last HTTP/2 frame it sends on the WebSocket connection.
         </t>
         <section title="Tunneling RFC6455 framing (Plan D)">
           <t>
-            The WebSocket frame byte representation is embedded in payload in HTTP/2.0 DATA frame.
+            The WebSocket frame byte representation is embedded in payload in HTTP/2 DATA frame.
             DATA frames can be re-framed, i.e. One WebSocket frame can be split over multiple DATA frames and one DATA frames can contain multiple WebSocket frames.
           </t>
         </section>
@@ -284,14 +284,14 @@
             This plan is almost same as Plan D, but it uses END_SEGMENT flag in a DATA frame to make intermediaries enable to flush data appropriately without understanding the embedded WebSocket framing.
           </t>
           <t>
-            An endpoint MUST set END_SEGMENT on an HTTP/2.0 DATA frame containing the end of a WebSocket frame with FIN flag set.
+            An endpoint MUST set END_SEGMENT on an HTTP/2 DATA frame containing the end of a WebSocket frame with FIN flag set.
           </t>
         </section>
         <section title="HEADERS + DATAs (Plan C)">
           <t>
-            In this plan, an HTTP/2.0 HEADERS frame and subsequent multiple DATA frames represent a WebSocket frame.
-            END_SEGMENT flag MUST be set at the last HTTP/2.0 DATA frame for each WebSocket frame.
-            That is, WebSocket over HTTP/2.0 defines <spanx style="emph">segment</spanx> in <xref target="HTTP/2.0 draft"/> as <spanx style="emph">WebSocket frame</spanx>.
+            In this plan, an HTTP/2 HEADERS frame and subsequent multiple DATA frames represent a WebSocket frame.
+            END_SEGMENT flag MUST be set at the last HTTP/2 DATA frame for each WebSocket frame.
+            That is, WebSocket over HTTP/2 defines <spanx style="emph">segment</spanx> in <xref target="HTTP/2 draft"/> as <spanx style="emph">WebSocket frame</spanx>.
             The WebSocket frame headers are stored in the HEADERS frame in the following manner.
             <list style="symbols">
               <t>
@@ -345,7 +345,7 @@
       <section title="Masking">
         <t>
           <xref target="RFC6455"/> defines the masking mechanism which masks WebSocket frame data payload with a random masking-key.
-          On WebSocket over HTTP/2.0, masking mechanism MUST be disabled.
+          On WebSocket over HTTP/2, masking mechanism MUST be disabled.
         </t>
       </section>
     </section>
@@ -357,7 +357,7 @@
 
         <section title="Close the WebSocket Connection" anchor="close_wsc">
           <t>
-            To <spanx style="emph">Close the WebSocket Connection</spanx>, an endpoint closes the underlying HTTP/2.0 stream.
+            To <spanx style="emph">Close the WebSocket Connection</spanx>, an endpoint closes the underlying HTTP/2 stream.
             If the stream is already closed, the endpoint MUST do nothing.
             Otherwise, the endpoint MUST send an RST_STREAM frame with an appropriate error code.
           </t>
@@ -365,7 +365,7 @@
         <section title="Start the WebSocket Closing Handshake" anchor="start_closing">
           <t>
             To <spanx style="emph">Start the WebSocket Closing Handshake</spanx> with a status code (<xref target='status_codes'/>) /code/ and an optional close reason (<xref target='close_reason'/>) /reason/, an endpoint MUST send a Close control frame, as described in <xref target="RFC6455"/> whose status code is set to /code/ and whose close reason is set to /reason/.
-            The last HTTP/2.0 frame of the WebSocket Close control frame MUST turn END_STREAM flag on.
+            The last HTTP/2 frame of the WebSocket Close control frame MUST turn END_STREAM flag on.
           </t>
         </section>
         <section title="The WebSocket Closing Handshake is Started">
@@ -393,7 +393,7 @@
       <section title='Abnormal Closures'>
         <section title='Client-Initiated Closure'>
           <t>
-            If at any point the underlying HTTP/2.0 stream is unexpectedly terminated, the client MUST <spanx style="emph">Fail the WebSocket Connection</spanx>.
+            If at any point the underlying HTTP/2 stream is unexpectedly terminated, the client MUST <spanx style="emph">Fail the WebSocket Connection</spanx>.
           </t>
           <t>
             Except as indicated above or as specified by the application layer
@@ -426,7 +426,7 @@
             To prevent TLS side-channel attacks such as <xref target="BEAST"/>.
           </t>
         </list>
-        These should be addressed at the HTTP/2.0 framing layer and WebSocket over HTTP/2.0 has no masking mechanism.
+        These should be addressed at the HTTP/2 framing layer and WebSocket over HTTP/2 has no masking mechanism.
       </t>
     </section>
     <section title="IANA Considerations">
@@ -436,7 +436,7 @@
     <references title="Normative References">
       <?rfc include="reference.RFC.6455" ?>
       <?rfc include="reference.RFC.2119" ?>
-      <reference anchor="HTTP/2.0 draft">
+      <reference anchor="HTTP/2 draft">
       <front>
       <title>Hypertext Transfer Protocol version 2.0</title>
       <author initials="M." surname="Belshe" fullname="Mike Belshe"></author>
