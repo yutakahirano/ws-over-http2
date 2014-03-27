@@ -290,7 +290,7 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    To establish a WebSocket connection, a client needs to decide the
    protocol to use.  Roughly speaking, if a client knows the server's
    preference the client will connect to the server with the protocol.
-   Otherwise, a client tries to connect to the server with the native
+   Otherwise, the client tries to connect to the server with the native
    WebSocket.
 
 3.2.  non-secure connection
@@ -307,9 +307,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    connection, the client create an HTTP/2 stream on the HTTP/2
    connection.
 
-   Otherwise, a client set up a TLS connection.  The client SHOULD send
-   one or two of the following application protocols as ProtocolNameList
-   as specified in [ALPN draft] in any order.
+   Otherwise, the client sets up a TLS connection.  The client SHOULD
+   send one or two of the following application protocols as
+   ProtocolNameList as specified in [ALPN draft] in any order.
 
    o  "http/1.1" for the native WebSocket over TLS
 
@@ -328,7 +328,7 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    The client SHOULD keep track of the [ALT-SVC draft] information
    provided by the server and use it as the server's preference.
 
-   Note that though a client use the ALPN protocol when it sets up a TLS
+   Note that though a client uses the ALPN protocol when it sets up a
 
 
 
@@ -337,7 +337,7 @@ Hirano                   Expires August 5, 2014                 [Page 6]
 Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
-   connection, it SHOULD not use the information after that.
+   TLS connection, it SHOULD not use the information after that.
 
 
 
@@ -473,9 +473,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 4.2.1.  The Alt-Svc header
 
    When the Alt-Svc header field is contained in the handshake response,
-   the client SHOULD reconnect to the server with the advertised service
-   if possible.  Note that the Alt-Svc header field takes effect even
-   for the handshake response whose status code is not 101.
+   the client SHOULD use the advertised service if possible.  Note that
+   the Alt-Svc header field takes effect even for the handshake response
+   whose status code is not 101.
 
    If the client receives an opening handshake response having the Alt-
    Svc header field and the client is able to work with the advertised
@@ -483,8 +483,8 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    reason like "Alternate Service: h2ws" and then close the WebSocket
    connection as soon as possible.  These transactions MUST be hidden
    and MUST NOT be notified to upper layers like the JavaScript event
-   queue.  Then, the client SHOULD reconnect to the server.
-
+   queue.  Then, the client SHOULD connect to the advertised server with
+   the advertised protocol.
 
 
 

@@ -98,7 +98,7 @@
         <t>
           To establish a WebSocket connection, a client needs to decide the protocol to use.
           Roughly speaking, if a client knows the server's preference the client will connect to the server with the protocol.
-          Otherwise, a client tries to connect to the server with the native WebSocket.
+          Otherwise, the client tries to connect to the server with the native WebSocket.
         </t>
       </section>
 
@@ -113,7 +113,7 @@
           If the client knows that the server prefers WebSocket over HTTP/2 more than the native WebSocket and there is an existing HTTP/2 connection, the client create an HTTP/2 stream on the HTTP/2 connection.
         </t>
         <t>
-          Otherwise, a client set up a TLS connection.
+          Otherwise, the client sets up a TLS connection.
           The client SHOULD send one or two of the following application protocols as ProtocolNameList as specified in <xref target="ALPN draft" /> in any order.
           <list style="symbols">
             <t>"http/1.1" for the native WebSocket over TLS</t>
@@ -129,7 +129,7 @@
           The client SHOULD keep track of the <xref target="ALT-SVC draft" /> information provided by the server and use it as the server's preference.
         </t>
         <t>
-          Note that though a client use the ALPN protocol when it sets up a TLS connection, it SHOULD not use the information after that.
+          Note that though a client uses the ALPN protocol when it sets up a TLS connection, it SHOULD not use the information after that.
         </t>
       </section>
     </section>
