@@ -151,7 +151,7 @@
               “:host”: /host:port/ (e.g. “www.example.com:1234”) as used in the “Client Requirements” section of the WebSocket protocol specification. (See <xref target="RFC6455" />)
             </t>
             <t>
-            “:version”: the WebSocket protocol version of this request. MUST be “WebSocket/13” or so. The number MUST be matched with the Sec-WebSocket-Version header. (See <xref target="RFC6455" />)
+            “:version”: the WebSocket protocol version of this request. MUST be “WebSocket/13”.
             </t>
             <t>
             “:scheme”: the scheme portion of the URI. MUST be “ws” or “wss”. (See also /secure/ flag in <xref target="RFC6455" />)

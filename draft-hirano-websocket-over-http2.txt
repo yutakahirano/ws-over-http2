@@ -416,8 +416,7 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
       specification.  (See [RFC6455])
 
       ":version": the WebSocket protocol version of this request.  MUST
-      be "WebSocket/13" or so.  The number MUST be matched with the Sec-
-      WebSocket-Version header.  (See [RFC6455])
+      be "WebSocket/13".
 
       ":scheme": the scheme portion of the URI.  MUST be "ws" or "wss".
       (See also /secure/ flag in [RFC6455])
@@ -441,6 +440,7 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    server intends to allow the client connection, the HEADERS frame MUST
    NOT set the END_STREAM flag and MUST have ":status" containing "101".
    Any status code other than 101 indicates that the WebSocket handshake
+   has not completed and that the semantics of HTTP still apply.  The
 
 
 
@@ -449,7 +449,6 @@ Hirano                   Expires August 5, 2014                 [Page 8]
 Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
-   has not completed and that the semantics of HTTP still apply.  The
    client MAY send some data to the server before receiving the
    successful response.  The server MUST ignore this data when opening
    handshake fails.  After sending successful response, the server can
@@ -485,6 +484,7 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    and MUST NOT be notified to upper layers like the JavaScript event
    queue.  Then, the client SHOULD connect to the advertised server with
    the advertised protocol.
+
 
 
 
