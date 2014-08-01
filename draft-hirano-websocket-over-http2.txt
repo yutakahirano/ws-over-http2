@@ -291,6 +291,10 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    another opening handshake with the native WebSocket.  If it comes to
    that, the connection failure MUST not be reported to the upper layer.
 
+   NOTE: The server may reset the stream.  In such a case, the client
+   doesn't know if the communication path is capable of WebSocket over
+   HTTP/2.
+
    The client MUST not start an opening handshake with WebSocket over
    HTTP/2 when it knows that the communication path is not capable of
    WebSocket over HTTP/2.
@@ -325,10 +329,6 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
    Note that though a client uses the ALPN protocol when it sets up a
    TLS connection, it SHOULD not use the information after that.
-
-
-
-
 
 
 
