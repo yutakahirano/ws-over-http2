@@ -120,9 +120,11 @@ Table of Contents
    2.  Conformance Requirements and Terminology . . . . . . . . . . .  5
    3.  Cross Protocol Negotiation . . . . . . . . . . . . . . . . . .  6
      3.1.  Overview . . . . . . . . . . . . . . . . . . . . . . . . .  6
-     3.2.  non-secure connection  . . . . . . . . . . . . . . . . . .  6
-     3.3.  secure connection  . . . . . . . . . . . . . . . . . . . .  6
-     3.4.  the server's preference  . . . . . . . . . . . . . . . . .  6
+     3.2.  server preference  . . . . . . . . . . . . . . . . . . . .  6
+     3.3.  communication channel is capable of WebSocket over
+           HTTP/2 . . . . . . . . . . . . . . . . . . . . . . . . . .  6
+     3.4.  secure connection  . . . . . . . . . . . . . . . . . . . .  7
+     3.5.  the server's preference  . . . . . . . . . . . . . . . . .  7
    4.  Opening Handshake  . . . . . . . . . . . . . . . . . . . . . .  8
      4.1.  Handshake Request  . . . . . . . . . . . . . . . . . . . .  8
      4.2.  Handshake Response . . . . . . . . . . . . . . . . . . . .  8
@@ -156,8 +158,6 @@ Table of Contents
      9.1.  Normative References . . . . . . . . . . . . . . . . . . . 16
      9.2.  Informative References . . . . . . . . . . . . . . . . . . 16
    Author's Address . . . . . . . . . . . . . . . . . . . . . . . . . 17
-
-
 
 
 
@@ -293,14 +293,58 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    Otherwise, the client tries to connect to the server with the native
    WebSocket.
 
-3.2.  non-secure connection
+3.2.  server preference
 
-   If the client knows that the server prefers WebSocket over HTTP/2
-   more than the native WebSocket, the client SHOULD connect to the
-   server with WebSocket over HTTP/2.  Otherwise, the client SHOULD
-   connect to the server with the native WebSocket.
+   The server can tell its preference between the WebSocket over HTTP/2
+   and the native WebSocket by the following means.
 
-3.3.  secure connection
+   o  Sending [ALT-SVC draft] information to the client
+
+   o  Selecting an ALPN protocol
+
+3.3.  communication channel is capable of WebSocket over HTTP/2
+
+   The client knows if the communication channel towards the server is
+   capable of WebSocket over HTTP/2 when the handshake response is
+   received.
+
+   o  If status code of the response is other than 501 (Not
+      Implemented), the communication channel is capable of WebSocket
+      over HTTP/2.
+
+   o  If status code of the response is 501 (Not Implemented), the
+      communication channel is not capable of WebSocket over HTTP/2.
+
+   When the server receives a handshake from a client, the server MUST
+   send the server's opening handshake.
+
+   If the server has never received a SETTINGS frame that contains
+   WEBSOCKET_CAPABLE on the HTTP/2 connection, the server MUST send a
+   501 (Not Implemented) status code.
+
+   Otherwise, the server MUST NOT send a 501 (Not Implemented) status
+   code.
+
+   The client MAY start an opening handshake with WebSocket over HTTP/2
+   without knowing the communication channel is capable of WebSocket
+   over HTTP/2.  When the status code of the opening handshake handshake
+   from the server is 501 (Not Implemented), the client MAY start
+
+
+
+Hirano                   Expires August 5, 2014                 [Page 6]
+
+Internet-Draft            WebSocket over HTTP/2            February 2014
+
+
+   another opening handshake with the native WebSocket.  If it comes to
+   that, the connection failure MUST not be reported to the upper layer.
+
+   The client MUST not start an opening handshake with WebSocket over
+   HTTP/2 when it knows that the communication channel is not capable of
+   WebSocket over HTTP/2.
+
+3.4.  secure connection
 
    If the client knows that the server prefers WebSocket over HTTP/2
    more than the native WebSocket and there is an existing HTTP/2
@@ -323,57 +367,13 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    "no_application_protocol" alert, the client MUST _Fail the WebSocket
    connection_.
 
-3.4.  the server's preference
+3.5.  the server's preference
 
    The client SHOULD keep track of the [ALT-SVC draft] information
    provided by the server and use it as the server's preference.
 
    Note that though a client uses the ALPN protocol when it sets up a
-
-
-
-Hirano                   Expires August 5, 2014                 [Page 6]
-
-Internet-Draft            WebSocket over HTTP/2            February 2014
-
-
    TLS connection, it SHOULD not use the information after that.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -523,6 +523,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 5.2.  Frame representation
 
+   _ This section must be rewritten because the HTTP/2 specification has
+   changed. _
+
    Several representations are proposed.  In each representation, an
    endpoint MUST set END_STREAM flag at the last HTTP/2 frame it sends
    on the WebSocket connection.
@@ -550,9 +553,6 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    the last HTTP/2 DATA frame for each WebSocket frame.  That is,
    WebSocket over HTTP/2 defines _segment_ in [HTTP/2 draft] as
    _WebSocket frame_.  The WebSocket frame headers are stored in the
-   HEADERS frame in the following manner.
-
-
 
 
 
@@ -560,6 +560,8 @@ Hirano                   Expires August 5, 2014                [Page 10]
 
 Internet-Draft            WebSocket over HTTP/2            February 2014
 
+
+   HEADERS frame in the following manner.
 
    o  The ":fin" header field
 
@@ -598,8 +600,6 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    [RFC6455] defines the masking mechanism which masks WebSocket frame
    data payload with a random masking-key.  On WebSocket over HTTP/2,
    masking mechanism MUST be disabled.
-
-
 
 
 
