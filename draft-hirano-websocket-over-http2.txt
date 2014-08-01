@@ -73,8 +73,7 @@ Table of Contents
    3.  Cross Protocol Negotiation . . . . . . . . . . . . . . . . . .  5
      3.1.  Overview . . . . . . . . . . . . . . . . . . . . . . . . .  5
      3.2.  server preference  . . . . . . . . . . . . . . . . . . . .  5
-     3.3.  communication channel is capable of WebSocket over
-           HTTP/2 . . . . . . . . . . . . . . . . . . . . . . . . . .  5
+     3.3.  WebSocket over HTTP/2 capability . . . . . . . . . . . . .  5
      3.4.  secure connection  . . . . . . . . . . . . . . . . . . . .  6
      3.5.  the server's preference  . . . . . . . . . . . . . . . . .  6
    4.  Opening Handshake  . . . . . . . . . . . . . . . . . . . . . .  7
@@ -103,6 +102,7 @@ Table of Contents
      9.1.  Normative References . . . . . . . . . . . . . . . . . . . 14
      9.2.  Informative References . . . . . . . . . . . . . . . . . . 14
    Author's Address . . . . . . . . . . . . . . . . . . . . . . . . . 15
+
 
 
 
@@ -246,18 +246,26 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
    o  Selecting an ALPN protocol
 
-3.3.  communication channel is capable of WebSocket over HTTP/2
+3.3.  WebSocket over HTTP/2 capability
 
-   The client knows if the communication channel towards the server is
+   When two endpoints and all intermediaries between them understand
+   WebSocket over HTTP/2, we say the communication path consisting of
+   these nodes is capable of WebSocket over HTTP/2.
+
+   The client MUST send a SETTINGS frame containing WEBSOCKET_CAPABLE
+   before it starts the first WebSocket opening hansdhake on a HTTP/2
+   connection.
+
+   The client knows if the communication path towards the server is
    capable of WebSocket over HTTP/2 when the handshake response is
    received.
 
    o  If status code of the response is other than 501 (Not
-      Implemented), the communication channel is capable of WebSocket
-      over HTTP/2.
+      Implemented), the communication path is capable of WebSocket over
+      HTTP/2.
 
    o  If status code of the response is 501 (Not Implemented), the
-      communication channel is not capable of WebSocket over HTTP/2.
+      communication path is not capable of WebSocket over HTTP/2.
 
    When the server receives a handshake from a client, the server MUST
    send the server's opening handshake.
@@ -266,14 +274,6 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    WEBSOCKET_CAPABLE on the HTTP/2 connection, the server MUST send a
    501 (Not Implemented) status code.
 
-   Otherwise, the server MUST NOT send a 501 (Not Implemented) status
-   code.
-
-   The client MAY start an opening handshake with WebSocket over HTTP/2
-   without knowing the communication channel is capable of WebSocket
-   over HTTP/2.  When the status code of the opening handshake handshake
-   from the server is 501 (Not Implemented), the client MAY start
-
 
 
 Hirano                   Expires August 5, 2014                 [Page 5]
@@ -281,11 +281,18 @@ Hirano                   Expires August 5, 2014                 [Page 5]
 Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
+   Otherwise, the server MUST NOT send a 501 (Not Implemented) status
+   code.
+
+   The client MAY start an opening handshake with WebSocket over HTTP/2
+   without knowing if the communication path is capable of WebSocket
+   over HTTP/2.  When the status code of the opening handshake handshake
+   from the server is 501 (Not Implemented), the client MAY start
    another opening handshake with the native WebSocket.  If it comes to
    that, the connection failure MUST not be reported to the upper layer.
 
    The client MUST not start an opening handshake with WebSocket over
-   HTTP/2 when it knows that the communication channel is not capable of
+   HTTP/2 when it knows that the communication path is not capable of
    WebSocket over HTTP/2.
 
 3.4.  secure connection
@@ -318,13 +325,6 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
    Note that though a client uses the ALPN protocol when it sets up a
    TLS connection, it SHOULD not use the information after that.
-
-
-
-
-
-
-
 
 
 

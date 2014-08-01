@@ -112,12 +112,20 @@
         </t>
       </section>
 
-      <section title="communication channel is capable of WebSocket over HTTP/2">
+      <section title="WebSocket over HTTP/2 capability">
         <t>
-          The client knows if the communication channel towards the server is capable of WebSocket over HTTP/2 when the handshake response is received.
+          When two endpoints and all intermediaries between them understand WebSocket over HTTP/2, we say the communication path consisting of these nodes is capable of WebSocket over HTTP/2.
+        </t>
+
+        <t>
+          The client MUST send a SETTINGS frame containing WEBSOCKET_CAPABLE before it starts the first WebSocket opening hansdhake on a HTTP/2 connection.
+        </t>
+
+        <t>
+          The client knows if the communication path towards the server is capable of WebSocket over HTTP/2 when the handshake response is received.
           <list style="symbols">
-            <t>If status code of the response is other than 501 (Not Implemented), the communication channel is capable of WebSocket over HTTP/2.</t>
-            <t>If status code of the response is 501 (Not Implemented), the communication channel is not capable of WebSocket over HTTP/2.</t>
+            <t>If status code of the response is other than 501 (Not Implemented), the communication path is capable of WebSocket over HTTP/2.</t>
+            <t>If status code of the response is 501 (Not Implemented), the communication path is not capable of WebSocket over HTTP/2.</t>
           </list>
         </t>
 
@@ -132,11 +140,11 @@
         </t>
 
         <t>
-          The client MAY start an opening handshake with WebSocket over HTTP/2 without knowing the communication channel is capable of WebSocket over HTTP/2.
+          The client MAY start an opening handshake with WebSocket over HTTP/2 without knowing if the communication path is capable of WebSocket over HTTP/2.
           When the status code of the opening handshake handshake from the server is 501 (Not Implemented), the client MAY start another opening handshake with the native WebSocket. If it comes to that, the connection failure MUST not be reported to the upper layer.
         </t>
         <t>
-          The client MUST not start an opening handshake with WebSocket over HTTP/2 when it knows that the communication channel is not capable of WebSocket over HTTP/2.
+          The client MUST not start an opening handshake with WebSocket over HTTP/2 when it knows that the communication path is not capable of WebSocket over HTTP/2.
         </t>
       </section>
 
