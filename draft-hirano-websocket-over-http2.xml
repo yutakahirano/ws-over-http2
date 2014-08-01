@@ -203,10 +203,10 @@
           In addition, the following OPTIONAL name/value pairs MAY be present:
           <list style="empty">
             <t>
-              “:sec-websocket-protocol” - the Sec-WebSocket-Protocol header (See <xref target="RFC6455" />)
+              “sec-websocket-protocol” - the Sec-WebSocket-Protocol header (See <xref target="RFC6455" />)
             </t>
             <t>
-              “:sec-websocket-extensions” - the Sec-WebSocket-Extensions header (See <xref target="RFC6455" />)        
+              “sec-websocket-extensions” - the Sec-WebSocket-Extensions header (See <xref target="RFC6455" />)
             </t>
           </list>
           Also, other HTTP compatible header name/value pairs MAY be present.
@@ -224,10 +224,10 @@
           In addition, the following OPTIONAL name/value pairs MAY be present:
           <list style="empty">
             <t>
-              “:sec-websocket-protocol” - the Sec-WebSocket-Protocol header (See <xref target="RFC6455" />)
+              “sec-websocket-protocol” - the Sec-WebSocket-Protocol header (See <xref target="RFC6455" />)
             </t>
             <t>
-              “:sec-websocket-extensions” - the Sec-WebSocket-Extensions header (See <xref target="RFC6455" />)
+              “sec-websocket-extensions” - the Sec-WebSocket-Extensions header (See <xref target="RFC6455" />)
             </t>
           </list>
           Also, other HTTP compatible header name/value pairs MAY be present.

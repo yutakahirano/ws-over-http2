@@ -370,10 +370,10 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
    In addition, the following OPTIONAL name/value pairs MAY be present:
 
-      ":sec-websocket-protocol" - the Sec-WebSocket-Protocol header (See
+      "sec-websocket-protocol" - the Sec-WebSocket-Protocol header (See
       [RFC6455])
 
-      ":sec-websocket-extensions" - the Sec-WebSocket-Extensions header
+      "sec-websocket-extensions" - the Sec-WebSocket-Extensions header
       (See [RFC6455])
 
    Also, other HTTP compatible header name/value pairs MAY be present.
@@ -403,10 +403,10 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    [RFC6455]).  In addition, the following OPTIONAL name/value pairs MAY
    be present:
 
-      ":sec-websocket-protocol" - the Sec-WebSocket-Protocol header (See
+      "sec-websocket-protocol" - the Sec-WebSocket-Protocol header (See
       [RFC6455])
 
-      ":sec-websocket-extensions" - the Sec-WebSocket-Extensions header
+      "sec-websocket-extensions" - the Sec-WebSocket-Extensions header
       (See [RFC6455])
 
    Also, other HTTP compatible header name/value pairs MAY be present.
