@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<reference anchor='RFC1979'>
+
+<front>
+<title>PPP Deflate Protocol</title>
+<author initials='J.' surname='Woods' fullname='John Woods'>
+<organization>Proteon, Inc.</organization>
+<address>
+<postal>
+<street>9 Technology Drive</street>
+<city>Westborough</city>
+<region>MA</region>
+<code>01581-1799</code>
+<country>US</country></postal>
+<phone>+1 508 898 2800 x2651</phone>
+<email>jfw@funhouse.com</email></address></author>
+<date year='1996' month='August' />
+<abstract>
+<t>The Point-to-Point Protocol (PPP)provides a standard method for transporting multi-protocol datagrams over point-to-point links.</t>
+<t>The PPP Compression Control Protocolprovides a method to negotiate and utilize compression protocols over PPP encapsulated links.</t>
+<t>This document describes the use of the PPP Deflate compression protocol for compressing PPP encapsulated packets.</t></abstract></front>
+
+<seriesInfo name='RFC' value='1979' />
+<format type='TXT' octets='18803' target='http://www.rfc-editor.org/rfc/rfc1979.txt' />
+</reference>

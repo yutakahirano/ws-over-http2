@@ -98,11 +98,11 @@ Table of Contents
      6.4.  Status Codes . . . . . . . . . . . . . . . . . . . . . . . 11
    7.  Security Considerations  . . . . . . . . . . . . . . . . . . . 12
    8.  IANA Considerations  . . . . . . . . . . . . . . . . . . . . . 13
+     8.1.  Registration of New SETTINGS parameter . . . . . . . . . . 13
    9.  References . . . . . . . . . . . . . . . . . . . . . . . . . . 14
      9.1.  Normative References . . . . . . . . . . . . . . . . . . . 14
      9.2.  Informative References . . . . . . . . . . . . . . . . . . 14
    Author's Address . . . . . . . . . . . . . . . . . . . . . . . . . 15
-
 
 
 
@@ -252,9 +252,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    WebSocket over HTTP/2, we say the communication path consisting of
    these nodes is capable of WebSocket over HTTP/2.
 
-   The client MUST send a SETTINGS frame containing WEBSOCKET_CAPABLE
-   before it starts the first WebSocket opening hansdhake on a HTTP/2
-   connection.
+   The client MUST send a SETTINGS frame containing
+   SETTINGS_WEBSOCKET_CAPABLE before it starts the first WebSocket
+   opening hansdhake on a HTTP/2 connection.
 
    The client knows if the communication path towards the server is
    capable of WebSocket over HTTP/2 when the handshake response is
@@ -271,8 +271,8 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
    send the server's opening handshake.
 
    If the server has never received a SETTINGS frame that contains
-   WEBSOCKET_CAPABLE on the HTTP/2 connection, the server MUST send a
-   501 (Not Implemented) status code.
+   SETTINGS_WEBSOCKET_CAPABLE on the HTTP/2 connection, the server MUST
+   send a 501 (Not Implemented) status code.
 
 
 
@@ -675,14 +675,14 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 8.  IANA Considerations
 
+8.1.  Registration of New SETTINGS parameter
 
+   This section describes a new SETTINGS parameter.
 
-
-
-
-
-
-
+   SETTINGS_WEBSOCKET_CAPABLE(0xxx): The Client uses this parameter to
+   declare that it wants to use WebSocket over HTTP/2.  This parameter
+   must be sent before creating any WebSocket over HTTP/2 stream in an
+   HTTP/2 connection.
 
 
 

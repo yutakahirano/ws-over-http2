@@ -1,0 +1,16 @@
+#!/bin/bash
+
+REFERENCES="\
+  1951 \
+  1979 \
+  2119 \
+  2616 \
+  2818 \
+  5226 \
+  5234 \
+  6455 \
+"
+
+for reference in $REFERENCES; do
+  wget "http://xml.resource.org/public/rfc/bibxml/reference.RFC.${reference}.xml"
+done

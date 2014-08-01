@@ -118,7 +118,7 @@
         </t>
 
         <t>
-          The client MUST send a SETTINGS frame containing WEBSOCKET_CAPABLE before it starts the first WebSocket opening hansdhake on a HTTP/2 connection.
+          The client MUST send a SETTINGS frame containing SETTINGS_WEBSOCKET_CAPABLE before it starts the first WebSocket opening hansdhake on a HTTP/2 connection.
         </t>
 
         <t>
@@ -133,7 +133,7 @@
           When the server receives a handshake from a client, the server MUST send the server's opening handshake.
         </t>
         <t>
-          If the server has never received a SETTINGS frame that contains WEBSOCKET_CAPABLE on the HTTP/2 connection, the server MUST send a 501 (Not Implemented) status code.
+          If the server has never received a SETTINGS frame that contains SETTINGS_WEBSOCKET_CAPABLE on the HTTP/2 connection, the server MUST send a 501 (Not Implemented) status code.
         </t>
         <t>
           Otherwise, the server MUST NOT send a 501 (Not Implemented) status code.
@@ -337,6 +337,18 @@
       </t>
     </section>
     <section title="IANA Considerations">
+      <section title='Registration of New SETTINGS parameter'>
+        <t>
+          This section describes a new SETTINGS parameter.
+        </t>
+
+        <t>
+          SETTINGS_WEBSOCKET_CAPABLE(0xxx):
+          The Client uses this parameter to declare that it wants to use WebSocket over HTTP/2.
+          This parameter must be sent before creating any WebSocket over HTTP/2 stream in an HTTP/2 connection.
+        </t>
+
+      </section>
     </section>
   </middle>
   <back>

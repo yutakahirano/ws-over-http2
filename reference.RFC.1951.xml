@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<reference anchor='RFC1951'>
+
+<front>
+<title>DEFLATE Compressed Data Format Specification version 1.3</title>
+<author initials='P.' surname='Deutsch' fullname='L. Peter Deutsch'>
+<organization>Aladdin Enterprises</organization>
+<address>
+<postal>
+<street>203 Santa Margarita Ave.</street>
+<city>Menlo Park</city>
+<region>CA</region>
+<code>94025</code>
+<country>US</country></postal>
+<phone>+1 415 322 0103</phone>
+<facsimile>+1 415 322 1734</facsimile>
+<email>ghost@aladdin.com</email></address></author>
+<date year='1996' month='May' />
+<abstract>
+<t>This specification defines a lossless compressed data format that compresses data using a combination of the LZ77 algorithm and Huffman coding, with efficiency comparable to the best currently available general-purpose compression methods.  The data can be produced or consumed, even for an arbitrarily long sequentially presented input data stream, using only an a priori bounded amount of intermediate storage.  The format can be implemented readily in a manner not covered by patents.</t></abstract></front>
+
+<seriesInfo name='RFC' value='1951' />
+<format type='TXT' octets='36944' target='http://www.rfc-editor.org/rfc/rfc1951.txt' />
+<format type='PS' octets='57408' target='http://www.rfc-editor.org/rfc/rfc1951.ps' />
+<format type='PDF' octets='56620' target='http://www.rfc-editor.org/rfc/rfc1951.pdf' />
+</reference>
