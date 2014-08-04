@@ -192,16 +192,16 @@
               “:path”: /resource name/ as used in the “Client Requirements” section of the WebSocket protocol specification. (See <xref target="RFC6455" />)
             </t>
             <t>
-              “:host”: /host:port/ (e.g. “www.example.com:1234”) as used in the “Client Requirements” section of the WebSocket protocol specification. (See <xref target="RFC6455" />)
+              “:authority”: /host:port/ (e.g. “www.example.com:1234”) as used in the “Client Requirements” section of the WebSocket protocol specification. (See <xref target="RFC6455" />)
             </t>
             <t>
-            “:version”: the WebSocket protocol version of this request. MUST be “WebSocket/13”.
+            “websocket-version”: the WebSocket protocol version of this request. MUST be “WebSocket/13”.
             </t>
             <t>
             “:scheme”: the scheme portion of the URI. MUST be “ws” or “wss”. (See also /secure/ flag in <xref target="RFC6455" />)
             </t>
             <t>
-            “:origin”: /origin/ as used in the “Client Requirements” section of the WebSocket protocol specification. (See <xref target="RFC6455" />)
+            “websocket-origin”: /origin/ as used in the “Client Requirements” section of the WebSocket protocol specification. (See <xref target="RFC6455" />)
             </t>
           </list>
           In addition, the following OPTIONAL name/value pairs MAY be present:
@@ -347,7 +347,6 @@
           The Client uses this parameter to declare that it wants to use WebSocket over HTTP/2.
           This parameter must be sent before creating any WebSocket over HTTP/2 stream in an HTTP/2 connection.
         </t>
-
       </section>
     </section>
   </middle>

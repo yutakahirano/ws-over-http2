@@ -355,18 +355,18 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
       ":path": /resource name/ as used in the "Client Requirements"
       section of the WebSocket protocol specification.  (See [RFC6455])
 
-      ":host": /host:port/ (e.g. "www.example.com:1234") as used in the
-      "Client Requirements" section of the WebSocket protocol
+      ":authority": /host:port/ (e.g. "www.example.com:1234") as used in
+      the "Client Requirements" section of the WebSocket protocol
       specification.  (See [RFC6455])
 
-      ":version": the WebSocket protocol version of this request.  MUST
-      be "WebSocket/13".
+      "websocket-version": the WebSocket protocol version of this
+      request.  MUST be "WebSocket/13".
 
       ":scheme": the scheme portion of the URI.  MUST be "ws" or "wss".
       (See also /secure/ flag in [RFC6455])
 
-      ":origin": /origin/ as used in the "Client Requirements" section
-      of the WebSocket protocol specification.  (See [RFC6455])
+      "websocket-origin": /origin/ as used in the "Client Requirements"
+      section of the WebSocket protocol specification.  (See [RFC6455])
 
    In addition, the following OPTIONAL name/value pairs MAY be present:
 
