@@ -5,7 +5,7 @@
 <?rfc toc="yes" ?>
 <rfc
    category="std"
-   docName="draft-hirano-httpbis-websocket-over-http2-00"
+   docName="draft-hirano-httpbis-websocket-over-http2-01"
    ipr="trust200902">
   <front>
     <title>WebSocket over HTTP/2</title>
@@ -18,7 +18,7 @@
         <email>yhirano@google.com</email>
       </address>
     </author>
-    <date month="February" year="2014"/>
+    <date month="August" year="2014"/>
     <area>Applications</area>
     <workgroup>HTTPbis Working Group</workgroup>
     <abstract>

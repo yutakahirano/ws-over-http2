@@ -3,12 +3,12 @@
 
 HTTPbis Working Group                                          Y. Hirano
 Internet-Draft                                              Google, Inc.
-Intended status: Standards Track                           February 2014
-Expires: August 5, 2014
+Intended status: Standards Track                          August 4, 2014
+Expires: February 5, 2015
 
 
                          WebSocket over HTTP/2
-              draft-hirano-httpbis-websocket-over-http2-00
+              draft-hirano-httpbis-websocket-over-http2-01
 
 Abstract
 
@@ -39,7 +39,7 @@ Status of this Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 5, 2014.
+   This Internet-Draft will expire on February 5, 2015.
 
 Copyright Notice
 
@@ -52,9 +52,9 @@ Copyright Notice
 
 
 
-Hirano                   Expires August 5, 2014                 [Page 1]
+Hirano                  Expires February 5, 2015                [Page 1]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
    publication of this document.  Please review these documents
@@ -108,9 +108,9 @@ Table of Contents
 
 
 
-Hirano                   Expires August 5, 2014                 [Page 2]
+Hirano                  Expires February 5, 2015                [Page 2]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 1.  Introduction
@@ -164,9 +164,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 
-Hirano                   Expires August 5, 2014                 [Page 3]
+Hirano                  Expires February 5, 2015                [Page 3]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 2.  Conformance Requirements and Terminology
@@ -220,9 +220,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 
-Hirano                   Expires August 5, 2014                 [Page 4]
+Hirano                  Expires February 5, 2015                [Page 4]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 3.  Cross Protocol Negotiation
@@ -276,9 +276,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 
-Hirano                   Expires August 5, 2014                 [Page 5]
+Hirano                  Expires February 5, 2015                [Page 5]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
    Otherwise, the server MUST NOT send a 501 (Not Implemented) status
@@ -332,9 +332,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 
-Hirano                   Expires August 5, 2014                 [Page 6]
+Hirano                  Expires February 5, 2015                [Page 6]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 4.  Opening Handshake
@@ -388,9 +388,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 
-Hirano                   Expires August 5, 2014                 [Page 7]
+Hirano                  Expires February 5, 2015                [Page 7]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
    client MAY send some data to the server before receiving the
@@ -444,9 +444,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 
-Hirano                   Expires August 5, 2014                 [Page 8]
+Hirano                  Expires February 5, 2015                [Page 8]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 5.  Data Framing
@@ -500,9 +500,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 
-Hirano                   Expires August 5, 2014                 [Page 9]
+Hirano                  Expires February 5, 2015                [Page 9]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 6.  Closing the Connection
@@ -556,9 +556,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 
-Hirano                   Expires August 5, 2014                [Page 10]
+Hirano                  Expires February 5, 2015               [Page 10]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 6.1.7.  Fail the WebSocket Connection
@@ -612,9 +612,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 
-Hirano                   Expires August 5, 2014                [Page 11]
+Hirano                  Expires February 5, 2015               [Page 11]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 7.  Security Considerations
@@ -668,9 +668,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 
-Hirano                   Expires August 5, 2014                [Page 12]
+Hirano                  Expires February 5, 2015               [Page 12]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 8.  IANA Considerations
@@ -724,9 +724,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 
-Hirano                   Expires August 5, 2014                [Page 13]
+Hirano                  Expires February 5, 2015               [Page 13]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 9.  References
@@ -780,9 +780,9 @@ Internet-Draft            WebSocket over HTTP/2            February 2014
 
 
 
-Hirano                   Expires August 5, 2014                [Page 14]
+Hirano                  Expires February 5, 2015               [Page 14]
 
-Internet-Draft            WebSocket over HTTP/2            February 2014
+Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 Author's Address
@@ -836,5 +836,5 @@ Author's Address
 
 
 
-Hirano                   Expires August 5, 2014                [Page 15]
+Hirano                  Expires February 5, 2015               [Page 15]
 
