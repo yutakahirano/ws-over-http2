@@ -1,10 +1,11 @@
 
 
 
+
 HTTPbis Working Group                                          Y. Hirano
 Internet-Draft                                              Google, Inc.
-Intended status: Standards Track                          August 4, 2014
-Expires: February 5, 2015
+Intended status: Standards Track                         August 12, 2014
+Expires: February 13, 2015
 
 
                          WebSocket over HTTP/2
@@ -24,7 +25,7 @@ Abstract
 
    Please send feedback to the ietf-http-wg@w3.org mailing list.
 
-Status of this Memo
+Status of This Memo
 
    This Internet-Draft is submitted in full conformance with the
    provisions of BCP 78 and BCP 79.
@@ -39,7 +40,7 @@ Status of this Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on February 5, 2015.
+   This Internet-Draft will expire on February 13, 2015.
 
 Copyright Notice
 
@@ -52,7 +53,7 @@ Copyright Notice
 
 
 
-Hirano                  Expires February 5, 2015                [Page 1]
+Hirano                  Expires February 13, 2015               [Page 1]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
@@ -64,51 +65,51 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
 
-
 Table of Contents
 
-   1.  Introduction . . . . . . . . . . . . . . . . . . . . . . . . .  3
-     1.1.  Document Organization  . . . . . . . . . . . . . . . . . .  3
-   2.  Conformance Requirements and Terminology . . . . . . . . . . .  4
-   3.  Cross Protocol Negotiation . . . . . . . . . . . . . . . . . .  5
-     3.1.  Overview . . . . . . . . . . . . . . . . . . . . . . . . .  5
-     3.2.  server preference  . . . . . . . . . . . . . . . . . . . .  5
-     3.3.  WebSocket over HTTP/2 capability . . . . . . . . . . . . .  5
-     3.4.  secure connection  . . . . . . . . . . . . . . . . . . . .  6
-     3.5.  the server's preference  . . . . . . . . . . . . . . . . .  6
-   4.  Opening Handshake  . . . . . . . . . . . . . . . . . . . . . .  7
-     4.1.  Handshake Request  . . . . . . . . . . . . . . . . . . . .  7
-     4.2.  Handshake Response . . . . . . . . . . . . . . . . . . . .  7
-       4.2.1.  The Alt-Svc header . . . . . . . . . . . . . . . . . .  8
-   5.  Data Framing . . . . . . . . . . . . . . . . . . . . . . . . .  9
-   6.  Closing the Connection . . . . . . . . . . . . . . . . . . . . 10
-     6.1.  Definitions  . . . . . . . . . . . . . . . . . . . . . . . 10
-       6.1.1.  Close the WebSocket Connection . . . . . . . . . . . . 10
-       6.1.2.  Start the WebSocket Closing Handshake  . . . . . . . . 10
-       6.1.3.  The WebSocket Closing Handshake is Started . . . . . . 10
-       6.1.4.  The WebSocket Connection is Closed . . . . . . . . . . 10
-       6.1.5.  The WebSocket Connection Close Code  . . . . . . . . . 10
-       6.1.6.  The WebSocket Connection Close Reason  . . . . . . . . 10
-       6.1.7.  Fail the WebSocket Connection  . . . . . . . . . . . . 11
-     6.2.  Abnormal Closures  . . . . . . . . . . . . . . . . . . . . 11
-       6.2.1.  Client-Initiated Closure . . . . . . . . . . . . . . . 11
-       6.2.2.  Server-initiated closure . . . . . . . . . . . . . . . 11
-       6.2.3.  Recovering from Abnormal Closure . . . . . . . . . . . 11
-     6.3.  Normal Closure of Connections  . . . . . . . . . . . . . . 11
-     6.4.  Status Codes . . . . . . . . . . . . . . . . . . . . . . . 11
-   7.  Security Considerations  . . . . . . . . . . . . . . . . . . . 12
-   8.  IANA Considerations  . . . . . . . . . . . . . . . . . . . . . 13
-     8.1.  Registration of New SETTINGS parameter . . . . . . . . . . 13
-   9.  References . . . . . . . . . . . . . . . . . . . . . . . . . . 14
-     9.1.  Normative References . . . . . . . . . . . . . . . . . . . 14
-     9.2.  Informative References . . . . . . . . . . . . . . . . . . 14
-   Author's Address . . . . . . . . . . . . . . . . . . . . . . . . . 15
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+     1.1.  Document Organization . . . . . . . . . . . . . . . . . .   3
+   2.  Conformance Requirements and Terminology  . . . . . . . . . .   3
+   3.  Cross Protocol Negotiation  . . . . . . . . . . . . . . . . .   4
+     3.1.  Overview  . . . . . . . . . . . . . . . . . . . . . . . .   4
+     3.2.  server preference . . . . . . . . . . . . . . . . . . . .   4
+     3.3.  WebSocket over HTTP/2 capability  . . . . . . . . . . . .   4
+     3.4.  secure connection . . . . . . . . . . . . . . . . . . . .   5
+     3.5.  the server's preference . . . . . . . . . . . . . . . . .   6
+   4.  Opening Handshake . . . . . . . . . . . . . . . . . . . . . .   6
+     4.1.  Handshake Request . . . . . . . . . . . . . . . . . . . .   6
+     4.2.  Handshake Response  . . . . . . . . . . . . . . . . . . .   7
+       4.2.1.  The Alt-Svc header  . . . . . . . . . . . . . . . . .   7
+   5.  Data Framing  . . . . . . . . . . . . . . . . . . . . . . . .   8
+   6.  Closing the Connection  . . . . . . . . . . . . . . . . . . .   8
+     6.1.  Definitions . . . . . . . . . . . . . . . . . . . . . . .   8
+       6.1.1.  Close the WebSocket Connection  . . . . . . . . . . .   8
+       6.1.2.  Start the WebSocket Closing Handshake . . . . . . . .   8
+       6.1.3.  The WebSocket Closing Handshake is Started  . . . . .   8
+       6.1.4.  The WebSocket Connection is Closed  . . . . . . . . .   8
+       6.1.5.  The WebSocket Connection Close Code . . . . . . . . .   8
+       6.1.6.  The WebSocket Connection Close Reason . . . . . . . .   9
+       6.1.7.  Fail the WebSocket Connection . . . . . . . . . . . .   9
+     6.2.  Abnormal Closures . . . . . . . . . . . . . . . . . . . .   9
+       6.2.1.  Client-Initiated Closure  . . . . . . . . . . . . . .   9
+       6.2.2.  Server-initiated closure  . . . . . . . . . . . . . .   9
+       6.2.3.  Recovering from Abnormal Closure  . . . . . . . . . .   9
+     6.3.  Normal Closure of Connections . . . . . . . . . . . . . .   9
+     6.4.  Status Codes  . . . . . . . . . . . . . . . . . . . . . .   9
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
+     8.1.  Registration of New SETTINGS parameter  . . . . . . . . .  10
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
+     9.1.  Normative References  . . . . . . . . . . . . . . . . . .  10
+     9.2.  Informative References  . . . . . . . . . . . . . . . . .  10
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  10
 
 
 
 
 
-Hirano                  Expires February 5, 2015                [Page 2]
+
+Hirano                  Expires February 13, 2015               [Page 2]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
@@ -147,28 +148,6 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
    Section 4, Section 5 and Section 6 overrides definitions and rules in
    its counterpart in [RFC6455].
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                  Expires February 5, 2015                [Page 3]
-
-Internet-Draft            WebSocket over HTTP/2              August 2014
-
-
 2.  Conformance Requirements and Terminology
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
@@ -183,6 +162,14 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
    Conformance requirements phrased as algorithms or specific steps can
    be implemented in any manner, so long as the end result is
    equivalent.  In particular, the algorithms defined in this
+
+
+
+Hirano                  Expires February 13, 2015               [Page 3]
+
+Internet-Draft            WebSocket over HTTP/2              August 2014
+
+
    specification are intended to be easy to understand and are not
    intended to be performant.
 
@@ -192,38 +179,6 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
    is obvious "WebSocket" and "HTTP/2" can be omitted.  For example,
    "DATA frame" means "HTTP/2 DATA frame" and "Close frame" means
    "WebSocket Close frame".
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                  Expires February 5, 2015                [Page 4]
-
-Internet-Draft            WebSocket over HTTP/2              August 2014
-
 
 3.  Cross Protocol Negotiation
 
@@ -242,7 +197,7 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
    The server can tell its preference between the WebSocket over HTTP/2
    and the native WebSocket by the following means.
 
-   o  Sending [ALT-SVC draft] information to the client
+   o  Sending [ALT-SVC] information to the client
 
    o  Selecting an ALPN protocol
 
@@ -254,7 +209,7 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 
    The client MUST send a SETTINGS frame containing
    SETTINGS_WEBSOCKET_CAPABLE before it starts the first WebSocket
-   opening hansdhake on a HTTP/2 connection.
+   opening handshake on a HTTP/2 connection.
 
    The client knows if the communication path towards the server is
    capable of WebSocket over HTTP/2 when the handshake response is
@@ -263,6 +218,13 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
    o  If status code of the response is other than 501 (Not
       Implemented), the communication path is capable of WebSocket over
       HTTP/2.
+
+
+
+Hirano                  Expires February 13, 2015               [Page 4]
+
+Internet-Draft            WebSocket over HTTP/2              August 2014
+
 
    o  If status code of the response is 501 (Not Implemented), the
       communication path is not capable of WebSocket over HTTP/2.
@@ -273,13 +235,6 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
    If the server has never received a SETTINGS frame that contains
    SETTINGS_WEBSOCKET_CAPABLE on the HTTP/2 connection, the server MUST
    send a 501 (Not Implemented) status code.
-
-
-
-Hirano                  Expires February 5, 2015                [Page 5]
-
-Internet-Draft            WebSocket over HTTP/2              August 2014
-
 
    Otherwise, the server MUST NOT send a 501 (Not Implemented) status
    code.
@@ -308,7 +263,7 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 
    Otherwise, the client sets up a TLS connection.  The client SHOULD
    send one or two of the following application protocols as
-   ProtocolNameList as specified in [ALPN draft] in any order.
+   ProtocolNameList as specified in [ALPN] in any order.
 
    o  "http/1.1" for the native WebSocket over TLS
 
@@ -319,23 +274,24 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
    the server selects the "http/1.1" protocol or the server does not
    support ALPN, the client SHOULD connect to the server with the native
    WebSocket on the TLS connection.  If the server returns
+
+
+
+Hirano                  Expires February 13, 2015               [Page 5]
+
+Internet-Draft            WebSocket over HTTP/2              August 2014
+
+
    "no_application_protocol" alert, the client MUST _Fail the WebSocket
    connection_.
 
 3.5.  the server's preference
 
-   The client SHOULD keep track of the [ALT-SVC draft] information
-   provided by the server and use it as the server's preference.
+   The client SHOULD keep track of the [ALT-SVC] information provided by
+   the server and use it as the server's preference.
 
    Note that though a client uses the ALPN protocol when it sets up a
    TLS connection, it SHOULD not use the information after that.
-
-
-
-Hirano                  Expires February 5, 2015                [Page 6]
-
-Internet-Draft            WebSocket over HTTP/2              August 2014
-
 
 4.  Opening Handshake
 
@@ -373,6 +329,15 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
       "sec-websocket-protocol" - the Sec-WebSocket-Protocol header (See
       [RFC6455])
 
+
+
+
+
+Hirano                  Expires February 13, 2015               [Page 6]
+
+Internet-Draft            WebSocket over HTTP/2              August 2014
+
+
       "sec-websocket-extensions" - the Sec-WebSocket-Extensions header
       (See [RFC6455])
 
@@ -385,14 +350,6 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
    NOT set the END_STREAM flag and MUST have ":status" containing "101".
    Any status code other than 101 indicates that the WebSocket handshake
    has not completed and that the semantics of HTTP still apply.  The
-
-
-
-Hirano                  Expires February 5, 2015                [Page 7]
-
-Internet-Draft            WebSocket over HTTP/2              August 2014
-
-
    client MAY send some data to the server before receiving the
    successful response.  The server MUST ignore this data when opening
    handshake fails.  After sending successful response, the server can
@@ -432,19 +389,7 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                  Expires February 5, 2015                [Page 8]
+Hirano                  Expires February 13, 2015               [Page 7]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
@@ -452,58 +397,6 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 5.  Data Framing
 
    TO BE WRITTEN
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                  Expires February 5, 2015                [Page 9]
-
-Internet-Draft            WebSocket over HTTP/2              August 2014
-
 
 6.  Closing the Connection
 
@@ -546,20 +439,20 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 
    Same as Section 7.1.5 in [RFC6455].
 
-6.1.6.  The WebSocket Connection Close Reason
-
-   Same as Section 7.1.6 in [RFC6455].
 
 
 
 
 
 
-
-Hirano                  Expires February 5, 2015               [Page 10]
+Hirano                  Expires February 13, 2015               [Page 8]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
+
+6.1.6.  The WebSocket Connection Close Reason
+
+   Same as Section 7.1.6 in [RFC6455].
 
 6.1.7.  Fail the WebSocket Connection
 
@@ -592,31 +485,6 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 
    Same as Section 7.4 in [RFC6455].
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                  Expires February 5, 2015               [Page 11]
-
-Internet-Draft            WebSocket over HTTP/2              August 2014
-
-
 7.  Security Considerations
 
    [RFC6455] frame has the masking mechanism for two purposes.
@@ -633,42 +501,7 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                  Expires February 5, 2015               [Page 12]
+Hirano                  Expires February 13, 2015               [Page 9]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
@@ -684,106 +517,29 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
    must be sent before creating any WebSocket over HTTP/2 stream in an
    HTTP/2 connection.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                  Expires February 5, 2015               [Page 13]
-
-Internet-Draft            WebSocket over HTTP/2              August 2014
-
-
 9.  References
 
 9.1.  Normative References
 
-   [RFC6455]  Fette, I. and A. Melnikov, "The WebSocket Protocol",
-              RFC 6455, December 2011.
+   [RFC6455]  Fette, I. and A. Melnikov, "The WebSocket Protocol", RFC
+              6455, December 2011.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119, March 1997.
 
-   [HTTP/2 draft]
-              Belshe, M., Peon, R., Thomson, M., and A. Melnikov,
-              "Hypertext Transfer Protocol version 2", February 2014.
+   [HTTP-2]   Belshe, M., Peon, R., Thomson, M., and A. Melnikov,
+              "Hypertext Transfer Protocol version 2", August 2014.
 
-   [ALPN draft]
-              Friedl, S., Popov, A., Langley, A., and E. Stephan,
+   [ALPN]     Friedl, S., Popov, A., Langley, A., and E. Stephan,
               "Transport Layer Security (TLS) Application Layer Protocol
-              Negotiation Extension", January 2014.
+              Negotiation Extension", March 2014.
 
-   [ALT-SVC draft]
-              Nottingham, M. and P. McManus, "HTTP Alternative
-              Services", March 2014.
+   [ALT-SVC]  Nottingham, M., McManus, P., and J. Reschke, "HTTP
+              Alternative Services", July 2014.
 
 9.2.  Informative References
 
-   [BEAST]    Duong, T. and J. Rizzo, "The BEAST attack".
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                  Expires February 5, 2015               [Page 14]
-
-Internet-Draft            WebSocket over HTTP/2              August 2014
-
+   [BEAST]    Duong, T. and J. Rizzo, "The BEAST attack", 2011.
 
 Author's Address
 
@@ -801,40 +557,4 @@ Author's Address
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hirano                  Expires February 5, 2015               [Page 15]
-
+Hirano                  Expires February 13, 2015              [Page 10]

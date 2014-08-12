@@ -106,7 +106,7 @@
         <t>
           The server can tell its preference between the WebSocket over HTTP/2 and the native WebSocket by the following means.
           <list style="symbols">
-            <t>Sending <xref target="ALT-SVC draft" /> information to the client</t>
+            <t>Sending <xref target="ALT-SVC"/> information to the client</t>
             <t>Selecting an ALPN protocol</t>
           </list>
         </t>
@@ -118,7 +118,7 @@
         </t>
 
         <t>
-          The client MUST send a SETTINGS frame containing SETTINGS_WEBSOCKET_CAPABLE before it starts the first WebSocket opening hansdhake on a HTTP/2 connection.
+          The client MUST send a SETTINGS frame containing SETTINGS_WEBSOCKET_CAPABLE before it starts the first WebSocket opening handshake on a HTTP/2 connection.
         </t>
 
         <t>
@@ -158,7 +158,7 @@
         </t>
         <t>
           Otherwise, the client sets up a TLS connection.
-          The client SHOULD send one or two of the following application protocols as ProtocolNameList as specified in <xref target="ALPN draft" /> in any order.
+          The client SHOULD send one or two of the following application protocols as ProtocolNameList as specified in <xref target="ALPN"/> in any order.
           <list style="symbols">
             <t>"http/1.1" for the native WebSocket over TLS</t>
             <t>"h2ws" for secure WebSocket over HTTP/2.</t>
@@ -170,7 +170,7 @@
       </section>
       <section title="the server's preference">
         <t>
-          The client SHOULD keep track of the <xref target="ALT-SVC draft" /> information provided by the server and use it as the server's preference.
+          The client SHOULD keep track of the <xref target="ALT-SVC" /> information provided by the server and use it as the server's preference.
         </t>
         <t>
           Note that though a client uses the ALPN protocol when it sets up a TLS connection, it SHOULD not use the information after that.
@@ -354,32 +354,33 @@
     <references title="Normative References">
       <?rfc include="reference.RFC.6455" ?>
       <?rfc include="reference.RFC.2119" ?>
-      <reference anchor="HTTP/2 draft">
+      <reference anchor="HTTP-2">
       <front>
         <title>Hypertext Transfer Protocol version 2</title>
         <author initials="M." surname="Belshe" fullname="Mike Belshe"></author>
         <author initials="R." surname="Peon" fullname="Roberto Peon"></author>
         <author initials="M." surname="Thomson" fullname="Martin Thomson"></author>
         <author initials="A." surname="Melnikov" fullname="Alexey Melnikov"></author>
-        <date month="February" year="2014" />
+        <date month="August" year="2014" />
       </front>
       </reference>
-      <reference anchor="ALPN draft">
+      <reference anchor="ALPN">
         <front>
           <title>Transport Layer Security (TLS) Application Layer Protocol Negotiation Extension</title>
           <author initials="S." surname="Friedl" fullname="Stephan Friedl"></author>
           <author initials="A." surname="Popov" fullname="Andrei Popov"></author>
           <author initials="A." surname="Langley" fullname="Adam Langley"></author>
           <author initials="E." surname="Stephan" fullname="Emile Stephan"></author>
-          <date month="January" year="2014" />
+          <date month="March" year="2014" />
         </front>
       </reference>
-      <reference anchor="ALT-SVC draft">
+      <reference anchor="ALT-SVC">
         <front>
           <title>HTTP Alternative Services</title>
           <author initials="M." surname="Nottingham" fullname="Mark Nottingham"></author>
           <author initials="P." surname="McManus" fullname="Patrick McManus"></author>
-          <date month="March" year="2014" />
+          <author initials="J." surname="Reschke" fullname="Julian F. Reschke"></author>
+          <date month="July" year="2014" />
         </front>
       </reference>
     </references>
@@ -389,6 +390,7 @@
           <title>The BEAST attack</title>
           <author initials="T." surname="Duong" fullname="Thai Duong"></author>
           <author initials="J." surname="Rizzo" fullname="Juliano Rizzo"></author>
+          <date year="2011"/>
         </front>
       </reference>
     </references>
