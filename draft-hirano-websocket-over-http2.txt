@@ -4,8 +4,8 @@
 
 HTTPbis Working Group                                          Y. Hirano
 Internet-Draft                                              Google, Inc.
-Intended status: Standards Track                         August 12, 2014
-Expires: February 13, 2015
+Intended status: Standards Track                         August 15, 2014
+Expires: February 16, 2015
 
 
                          WebSocket over HTTP/2
@@ -15,13 +15,15 @@ Abstract
 
    The WebSocket protocol enables two-way communication between a client
    running untrusted code in a controlled environment to a remote host
-   that has opted-in to communications from that code.  Since it
-   requires one TCP connection for every WebSocket connection, having
-   multiple WebSocket connections between the same client and the same
-   server is inefficient.  On the other hand, HTTP/2 specifies a fast,
-   secure, multiplexed framing protocol.  This document provides bi-
-   directional multiplexed communication by layering WebSocket on top of
-   HTTP/2.
+   that has opted-in to communications from that code.  It requires one
+   TCP connection for every WebSocket connection, but WebSocket
+   connections often live for long time and are idle for most of the
+   time.  By multiplexing WebSocket traffic between the same client-
+   server pair onto one TCP connection, we can reduce resource spent for
+   TCP socket while keeping WebSockets useful.  On the other hand,
+   HTTP/2 specifies a fast, secure, multiplexed framing protocol.  This
+   document provides bi-directional multiplexed communication by
+   layering WebSocket on top of HTTP/2.
 
    Please send feedback to the ietf-http-wg@w3.org mailing list.
 
@@ -40,24 +42,25 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on February 13, 2015.
+   This Internet-Draft will expire on February 16, 2015.
 
 Copyright Notice
 
    Copyright (c) 2014 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
-   This document is subject to BCP 78 and the IETF Trust's Legal
-   Provisions Relating to IETF Documents
-   (http://trustee.ietf.org/license-info) in effect on the date of
 
 
 
-Hirano                  Expires February 13, 2015               [Page 1]
+
+Hirano                  Expires February 16, 2015               [Page 1]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
@@ -106,10 +109,7 @@ Table of Contents
 
 
 
-
-
-
-Hirano                  Expires February 13, 2015               [Page 2]
+Hirano                  Expires February 16, 2015               [Page 2]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
@@ -165,7 +165,7 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 
-Hirano                  Expires February 13, 2015               [Page 3]
+Hirano                  Expires February 16, 2015               [Page 3]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
@@ -221,7 +221,7 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 
-Hirano                  Expires February 13, 2015               [Page 4]
+Hirano                  Expires February 16, 2015               [Page 4]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
@@ -277,7 +277,7 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 
-Hirano                  Expires February 13, 2015               [Page 5]
+Hirano                  Expires February 16, 2015               [Page 5]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
@@ -333,7 +333,7 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 
-Hirano                  Expires February 13, 2015               [Page 6]
+Hirano                  Expires February 16, 2015               [Page 6]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
@@ -389,7 +389,7 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 
-Hirano                  Expires February 13, 2015               [Page 7]
+Hirano                  Expires February 16, 2015               [Page 7]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
@@ -445,7 +445,7 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 
-Hirano                  Expires February 13, 2015               [Page 8]
+Hirano                  Expires February 16, 2015               [Page 8]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
@@ -501,7 +501,7 @@ Internet-Draft            WebSocket over HTTP/2              August 2014
 
 
 
-Hirano                  Expires February 13, 2015               [Page 9]
+Hirano                  Expires February 16, 2015               [Page 9]
 
 Internet-Draft            WebSocket over HTTP/2              August 2014
 
@@ -557,4 +557,4 @@ Author's Address
 
 
 
-Hirano                  Expires February 13, 2015              [Page 10]
+Hirano                  Expires February 16, 2015              [Page 10]

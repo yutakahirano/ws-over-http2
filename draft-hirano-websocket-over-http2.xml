@@ -24,7 +24,8 @@
     <abstract>
       <t>
         The WebSocket protocol enables two-way communication between a client running untrusted code in a controlled environment to a remote host that has opted-in to communications from that code.
-        Since it requires one TCP connection for every WebSocket connection, having multiple WebSocket connections between the same client and the same server is inefficient.
+        It requires one TCP connection for every WebSocket connection, but WebSocket connections often live for long time and are idle for most of the time.
+        By multiplexing WebSocket traffic between the same client-server pair onto one TCP connection, we can reduce resource spent for TCP socket while keeping WebSockets useful.
         On the other hand, HTTP/2 specifies a fast, secure, multiplexed framing protocol.
         This document provides bi-directional multiplexed communication by layering WebSocket on top of HTTP/2.
       </t>
